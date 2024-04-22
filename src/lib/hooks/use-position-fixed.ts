@@ -9,11 +9,11 @@ export function usePositionFixed({
   hasBeenOpened,
   preventScrollRestoration,
 }: {
-  isOpen: boolean;
-  modal: boolean;
-  nested: boolean;
-  hasBeenOpened: boolean;
-  preventScrollRestoration: boolean;
+  isOpen: boolean
+  modal: boolean
+  nested: boolean
+  hasBeenOpened: boolean
+  preventScrollRestoration: boolean
 }) {
   const [activeUrl, setActiveUrl] = useState(typeof window !== 'undefined' ? window.location.href : '')
   const scrollPos = useRef(0)

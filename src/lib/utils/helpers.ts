@@ -1,7 +1,7 @@
 import type { DrawerDirection } from './types'
 
 interface Style {
-  [key: string]: string;
+  [key: string]: string
 }
 
 const cache = new WeakMap()
@@ -90,4 +90,22 @@ export function getTranslate(element: HTMLElement, direction: DrawerDirection): 
 
 export function dampenValue(v: number) {
   return 8 * (Math.log(v + 1) - 2)
+}
+
+export function getSetValueByIndex<T = unknown>(target: Set<T>, index: number) { 
+  if (typeof index !== 'number') throw new Error(`Index must be a number!`)
+
+  let i = 0
+  for (const item of target) if (i++ === index) return item
+
+  throw new Error(`Index ${index} out of bounds!`)
+}
+
+export const getElement = (element?: string | HTMLElement) => {
+  if (!element) return null
+
+  if (typeof element === 'string') {
+    return document.querySelector(element)
+  }
+  return element
 }

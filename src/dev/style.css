@@ -1,0 +1,7 @@
+body, main {
+    background-color: var(--mantine-color-body);
+}
+
+main {
+    min-height: 100vh;
+}

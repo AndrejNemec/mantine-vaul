@@ -6,8 +6,8 @@ export const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayo
 
 interface PreventScrollOptions {
   /** Whether the scroll lock is disabled. */
-  isDisabled?: boolean;
-  focusCallback?: () => void;
+  isDisabled?: boolean
+  focusCallback?: () => void
 }
 
 function chain(...callbacks: any[]): (...args: any[]) => void {
@@ -277,11 +277,11 @@ function preventScrollMobileSafari() {
 
 // Sets a CSS property on an element, and returns a function to revert it to the previous value.
 function setStyle(element: HTMLElement, style: string, value: string) {
-  const cur = element.style[style]
-  element.style[style] = value
+  const cur = element.style[style as any]
+  element.style[style as any] = value
 
   return () => {
-    element.style[style] = cur
+    element.style[style as any] = cur
   }
 }
 

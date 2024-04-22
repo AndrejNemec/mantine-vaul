@@ -1,63 +1,150 @@
-import { useState, useCallback, useRef, type ReactNode, type PointerEvent } from 'react'
-import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT, WINDOW_TOP_OFFSET } from './utils/constants'
-import { isIOS } from './hooks/use-prevent-scroll'
-import { isVertical } from './utils/helpers'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
+import { BORDER_RADIUS, CLOSE_THRESHOLD, DRAG_CLASS, NESTED_DISPLACEMENT, SCROLL_LOCK_TIMEOUT, TRANSITIONS, VELOCITY_THRESHOLD, WINDOW_TOP_OFFSET } from './utils/constants'
+import type { ScrollAreaComponent, VaulClasses } from './utils'
+import { VaulContextProvider, dampenValue, getElement, getSetValueByIndex, getTranslate, isVertical, reset, set, useVaulContext } from './utils'
+import type { ExtendComponent, Factory, MantineRadius, MantineThemeComponent, PortalProps, StylesApiProps } from '@mantine/core'
+import { Box, Portal, createVarsResolver, getRadius, useProps, useStyles } from '@mantine/core'
+import { isIOS, isInput, usePositionFixed, usePreventScroll, useSnapPoints } from './hooks'
+import { useFocusReturn, useId, useWindowEvent } from '@mantine/hooks'
+import classes from './vaul.module.css'
+import { VaulContent } from './VaulContent'
+import { VaulOverlay } from './VaulOverlay'
+import { VaulHandler } from './VaulHandler'
+import { VaulHeader } from './VaulHeader'
+import { VaulTitle } from './VaulTitle'
+import { VaulBody } from './VaulBody'
+import { VaulFooter } from './VaulFooter'
 
-type WithFadeFromProps = {
-    snapPoints: (number | string)[];
-    fadeFromIndex: number;
+export type VaulRootStylesNames =
+    | 'root'
+    | 'content'
+    | 'overlay'
+    | 'header'
+    | 'title'
+    | 'handler'
+    | 'body'
+    | 'footer'
+
+export type VaulRootCssVariables = {
+    root: '--vaul-radius' | '--vaul-z-index' | '--vaul-handler-radius' | '--vaul-overlay-z-index'
 }
 
-type WithoutFadeFromProps = {
-    snapPoints?: (number | string)[];
-    fadeFromIndex?: never;
+export interface BaseVaulRootProps {
+    activeSnapPoint?: number | string | null
+    setActiveSnapPoint?: (snapPoint: number | string | null) => void
+    open?: boolean
+    closeThreshold?: number
+    onOpenChange?: (open: boolean) => void
+    shouldScaleBackground?: boolean
+    scrollLockTimeout?: number
+    fixed?: boolean
+    dismissible?: boolean
+    onDrag?: (event: PointerEvent<HTMLDivElement>, percentageDragged: number) => void
+    onRelease?: (event: PointerEvent<HTMLDivElement>, open: boolean) => void
+    onClose?: () => void
+    direction?: 'top' | 'bottom' | 'left' | 'right'
+    preventScrollRestoration?: boolean
+    disablePreventScroll?: boolean
+    portalTarget?: PortalProps['target']
+    root?: string | HTMLElement
+    closeOnOutsideClick?: boolean
+    closeOnEscape?: boolean
+    snapPoints?: (number | string)[]
+    fadeFromIndex?: number
+    radius?: MantineRadius
+    handlerRadius?: MantineRadius
+    zIndex?: number
+    handlerZIndex?: number
+    scrollAreaComponent?: ScrollAreaComponent
+    id?: string
+    trapFocus?: boolean
+    returnFocus?: boolean
 }
 
-type DialogProps = {
-    activeSnapPoint?: number | string | null;
-    setActiveSnapPoint?: (snapPoint: number | string | null) => void;
-    children?: ReactNode;
-    open?: boolean;
-    closeThreshold?: number;
-    onOpenChange?: (open: boolean) => void;
-    shouldScaleBackground?: boolean;
-    scrollLockTimeout?: number;
-    fixed?: boolean;
-    dismissible?: boolean;
-    onDrag?: (event: PointerEvent<HTMLDivElement>, percentageDragged: number) => void;
-    onRelease?: (event: PointerEvent<HTMLDivElement>, open: boolean) => void;
-    nested?: boolean;
-    onClose?: () => void;
-    direction?: 'top' | 'bottom' | 'left' | 'right';
-    preventScrollRestoration?: boolean;
-    disablePreventScroll?: boolean;
-} & (WithFadeFromProps | WithoutFadeFromProps)
+export interface VaulRootProps extends BaseVaulRootProps, StylesApiProps<VaulRootFactory> {
+    __staticSelector?: string
+    children: ReactNode
+}
 
-function Root({
-    open: openProp,
-    onOpenChange,
-    children,
-    shouldScaleBackground,
-    onDrag: onDragProp,
-    onRelease: onReleaseProp,
-    snapPoints,
-    nested = false,
-    closeThreshold = CLOSE_THRESHOLD,
-    scrollLockTimeout = SCROLL_LOCK_TIMEOUT,
-    dismissible = true,
-    fadeFromIndex = snapPoints && snapPoints.length - 1,
-    activeSnapPoint: activeSnapPointProp,
-    setActiveSnapPoint: setActiveSnapPointProp,
-    fixed,
-    onClose,
-    direction = 'bottom',
-    preventScrollRestoration = true,
-    disablePreventScroll = false,
-    ...props
-}: DialogProps) {
+export type VaulRootFactory = Factory<{
+    props: VaulRootProps
+    stylesNames: VaulRootStylesNames
+    vars: VaulRootCssVariables
+}>
+
+const varsResolver = createVarsResolver<VaulRootFactory>(
+    // eslint-disable-next-line no-empty-pattern
+    (_, { radius, handlerRadius, zIndex, handlerZIndex }) => ({
+        root: {
+            '--vaul-radius': radius === undefined ? undefined : getRadius(radius),
+            '--vaul-z-index': zIndex === undefined ? undefined : `${zIndex}`,
+            '--vaul-handler-radius': radius === undefined ? undefined : getRadius(handlerRadius),
+            '--vaul-overlay-z-index': handlerZIndex === undefined ? undefined : `${handlerZIndex - 1}`,
+        },
+    })
+)
+
+const defaultProps: Omit<VaulRootProps, 'children'> = {
+    __staticSelector: 'VaulRoot',
+    open: false,
+    shouldScaleBackground: false,
+    closeThreshold: CLOSE_THRESHOLD,
+    scrollLockTimeout: SCROLL_LOCK_TIMEOUT,
+    dismissible: true,
+    direction: 'bottom',
+    preventScrollRestoration: true,
+    disablePreventScroll: false,
+    closeOnEscape: true,
+    closeOnOutsideClick: true,
+    fadeFromIndex: undefined,
+    root: '[data-mantine-vaul-wrapper]',
+    trapFocus: true,
+    returnFocus: true
+}
+
+const openedVauls = new Set<string>()
+
+const InternalVaulRoot = ({ nested = false, ..._props }: VaulRootProps & { nested?: boolean, }) => {
+    const props = useProps('VaulRoot', defaultProps, _props)
+
+    const {
+        __staticSelector,
+        open: openProp,
+        onOpenChange,
+        scrollAreaComponent,
+        children,
+        shouldScaleBackground,
+        onDrag: onDragProp,
+        onRelease: onReleaseProp,
+        snapPoints,
+        closeThreshold = CLOSE_THRESHOLD,
+        scrollLockTimeout = SCROLL_LOCK_TIMEOUT,
+        dismissible = true,
+        fadeFromIndex = snapPoints ? snapPoints.length - 1 : undefined,
+        activeSnapPoint: activeSnapPointProp,
+        setActiveSnapPoint: setActiveSnapPointProp,
+        fixed,
+        onClose,
+        direction = 'bottom',
+        preventScrollRestoration = true,
+        disablePreventScroll = false,
+        portalTarget,
+        closeOnEscape = true,
+        closeOnOutsideClick = true,
+        classNames,
+        styles,
+        unstyled,
+        vars,
+        variant = 'default',
+        id,
+        root,
+        trapFocus,
+        returnFocus
+    } = props
+
+    const vaulUid = useId(id)
     const [isOpen = false, setIsOpen] = useState<boolean>(false)
     const [hasBeenOpened, setHasBeenOpened] = useState<boolean>(false)
-    // Not visible = translateY(100%)
     const [visible, setVisible] = useState<boolean>(false)
     const [mounted, setMounted] = useState<boolean>(false)
     const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -76,10 +163,50 @@ function Root({
     const drawerHeightRef = useRef(drawerRef.current?.getBoundingClientRect().height || 0)
     const initialDrawerHeight = useRef(0)
 
+    const getStyles = useStyles<VaulRootFactory>({
+        name: __staticSelector!,
+        classes,
+        props,
+        classNames,
+        styles,
+        unstyled,
+        vars,
+        varsResolver,
+    })
+
     const onSnapPointChange = useCallback((activeSnapPointIndex: number) => {
         // Change openTime ref when we reach the last snap point to prevent dragging for 500ms incase it's scrollable.
-        if (snapPoints && activeSnapPointIndex === snapPointsOffset.length - 1) openTime.current = new Date()
+        if (snapPoints && activeSnapPointIndex === snapPointsOffset.length - 1) {
+            openTime.current = new Date()
+        }
     }, [])
+
+    useWindowEvent(
+        'keydown',
+        (event) => {
+            if (event.key === 'Escape' && closeOnEscape) {
+                if (openedVauls.has(vaulUid) && getSetValueByIndex(openedVauls, openedVauls.size - 1) === vaulUid) {
+                    const shouldTrigger =
+                        (event.target as HTMLElement)?.getAttribute('data-mantine-stop-propagation') !== 'true'
+                    shouldTrigger && closeDrawer()
+                }
+            }
+        },
+        { capture: true }
+    )
+
+    useFocusReturn({ opened: isOpen, shouldReturnFocus: trapFocus && returnFocus })
+
+    useEffect(() => {
+        if (isOpen) {
+            openedVauls.add(vaulUid)
+        } else {
+            openedVauls.delete(vaulUid)
+        }
+        return () => {
+            openedVauls.delete(vaulUid)
+        }
+    }, [isOpen, vaulUid])
 
     const {
         activeSnapPoint,
@@ -95,7 +222,7 @@ function Root({
         activeSnapPointProp,
         setActiveSnapPointProp,
         drawerRef,
-        fadeFromIndex,
+        fadeFromIndex: fadeFromIndex as number,
         overlayRef,
         onSnapPointChange,
         direction,
@@ -140,7 +267,7 @@ function Root({
         const swipeAmount = drawerRef.current ? getTranslate(drawerRef.current, direction) : null
         const date = new Date()
 
-        if (element.hasAttribute('data-vaul-no-drag') || element.closest('[data-vaul-no-drag]')) {
+        if (element.hasAttribute('data-mantine-vaul-no-drag') || element.closest('[data-mantine-vaul-no-drag]')) {
             return false
         }
 
@@ -224,7 +351,7 @@ function Root({
 
             // We need to capture last time when drag with scroll was triggered and have a timeout between
             const absDraggedDistance = Math.abs(draggedDistance)
-            const wrapper = document.querySelector('[vaul-drawer-wrapper]')
+            const wrapper = getElement(root)
 
             // Calculate the percentage dragged, where 1 is the closed position
             let percentageDragged = absDraggedDistance / drawerHeightRef.current
@@ -283,7 +410,7 @@ function Root({
                 )
             }
 
-            if (wrapper && overlayRef.current && shouldScaleBackground) {
+            if (!nested && wrapper && overlayRef.current && shouldScaleBackground) {
                 // Calculate percentageDragged as a fraction (0 to 1)
                 const scaleValue = Math.min(getScale() + percentageDragged * (1 - getScale()), 1)
                 const borderRadiusValue = 8 - percentageDragged * 8
@@ -414,7 +541,9 @@ function Root({
 
     useEffect(() => {
         if (!isOpen && shouldScaleBackground) {
-            // Can't use `onAnimationEnd` as the component will be invisible by then
+            if (nested) {
+                return
+            }
             const id = setTimeout(() => {
                 reset(document.body)
             }, 200)
@@ -446,7 +575,7 @@ function Root({
 
     function resetDrawer() {
         if (!drawerRef.current) return
-        const wrapper = document.querySelector('[vaul-drawer-wrapper]')
+        const wrapper = getElement(root)
         const currentSwipeAmount = getTranslate(drawerRef.current, direction)
 
         set(drawerRef.current, {
@@ -460,7 +589,7 @@ function Root({
         })
 
         // Don't reset background if swiped upwards
-        if (shouldScaleBackground && currentSwipeAmount && currentSwipeAmount > 0 && isOpen) {
+        if (!nested && shouldScaleBackground && currentSwipeAmount && currentSwipeAmount > 0 && isOpen) {
             set(
                 wrapper,
                 {
@@ -582,9 +711,9 @@ function Root({
     }, [visible])
 
     function scaleBackground(open: boolean) {
-        const wrapper = document.querySelector('[vaul-drawer-wrapper]')
+        const wrapper = getElement(root)
 
-        if (!wrapper || !shouldScaleBackground) return
+        if (!wrapper || !shouldScaleBackground || nested) return
 
         if (open) {
             // setting original styles initially
@@ -630,7 +759,7 @@ function Root({
     }
 
     function onNestedOpenChange(o: boolean) {
-        const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1
+        const scale = o ? (window.innerHeight - NESTED_DISPLACEMENT) / window.innerHeight : 1
         const y = o ? -NESTED_DISPLACEMENT : 0
 
         if (nestedOpenChangeTimer.current) {
@@ -686,51 +815,103 @@ function Root({
         }
     }
 
-    /*
-          if (!o) {
-            closeDrawer();
-          } else {
-            setHasBeenOpened(true);
-            setIsOpen(o);
-          }
-    */
-
     return (
-        <ModalBase
-            onClose={closeDrawer}
-            opened={isOpen}
-            {...props}
+        <VaulContextProvider
+            value={{
+                visible,
+                activeSnapPoint,
+                snapPoints,
+                setActiveSnapPoint,
+                drawerRef,
+                overlayRef,
+                scaleBackground,
+                onOpenChange,
+                onPress,
+                setVisible,
+                onRelease,
+                onDrag,
+                dismissible,
+                isOpen,
+                shouldFade,
+                closeDrawer,
+                onNestedDrag,
+                onNestedOpenChange,
+                onNestedRelease,
+                keyboardIsOpen,
+                openProp,
+                snapPointsOffset,
+                direction,
+                closeOnEscape,
+                closeOnOutsideClick,
+                getStyles,
+                variant,
+                unstyled,
+                uid: vaulUid,
+                scrollAreaComponent,
+                trapFocus: trapFocus!
+            }}
         >
-            <DrawerContext.Provider
-                value={{
-                    visible,
-                    activeSnapPoint,
-                    snapPoints,
-                    setActiveSnapPoint,
-                    drawerRef,
-                    overlayRef,
-                    scaleBackground,
-                    onOpenChange,
-                    onPress,
-                    setVisible,
-                    onRelease,
-                    onDrag,
-                    dismissible,
-                    isOpen,
-                    shouldFade,
-                    closeDrawer,
-                    onNestedDrag,
-                    onNestedOpenChange,
-                    onNestedRelease,
-                    keyboardIsOpen,
-                    openProp,
-                    modal: false,
-                    snapPointsOffset,
-                    direction,
-                }}
-            >
-                {children}
-            </DrawerContext.Provider>
-        </ModalBase>
+            <Portal target={portalTarget}>
+                <Box
+                    {...getStyles('root')}
+                    id={vaulUid}
+                    variant={variant}
+                >
+                    {isOpen ? children : null}
+                </Box>
+            </Portal>
+        </VaulContextProvider>
     )
 }
+
+export const VaulRoot = ({ onDrag, onOpenChange, ...rest }: VaulRootProps) => {
+    const context = useVaulContext(false)
+    const { onNestedDrag, onNestedOpenChange, onNestedRelease } = context || {}
+
+    if (context) {
+
+        return (
+            <InternalVaulRoot
+                nested
+                onClose={() => {
+                    onNestedOpenChange?.(false)
+                }}
+                onDrag={(e, p) => {
+                    onNestedDrag(e, p)
+                    onDrag?.(e, p)
+                }}
+                onOpenChange={(o) => {
+                    if (o) {
+                        onNestedOpenChange?.(o)
+                    }
+                    onOpenChange?.(o)
+                }}
+                onRelease={onNestedRelease}
+                {...rest as VaulRootProps}
+            />
+        )
+    }
+
+    return (
+        <InternalVaulRoot
+            {...rest}
+            onDrag={onDrag}
+            onOpenChange={onOpenChange}
+            nested={false}
+        />
+    )
+}
+
+const extendVaul = (c: ExtendComponent<VaulRootFactory>): MantineThemeComponent => c
+
+VaulRoot.displayName = 'mantine-vaul/VaulRoot'
+VaulRoot.classes = classes as VaulClasses
+VaulRoot.extend = extendVaul
+VaulRoot.Root = VaulRoot
+VaulRoot.Content = VaulContent
+VaulRoot.Overlay = VaulOverlay
+VaulRoot.Handler = VaulHandler
+VaulRoot.Header = VaulHeader
+VaulRoot.Title = VaulTitle
+VaulRoot.Body = VaulBody
+VaulRoot.Footer = VaulFooter

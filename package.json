@@ -2,11 +2,22 @@
   "name": "mantine-vaul",
   "private": false,
   "version": "0.0.1",
+  "description": "Mantine port of Vaul drawer component optimized for mobile devices.",
   "packageManager": "pnpm@8.4.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/AndrejNemec/mantine-vaul"
   },
+  "keywords": [
+    "react",
+    "drawer",
+    "dialog",
+    "modal",
+    "mantine",
+    "vaul"
+  ],
+  "author": "Andrej Nemec",
+  "license": "MIT",
   "main": "./dist/mantine-vaul.umd.js",
   "module": "./dist/mantine-vaul.es.js",
   "types": "./dist/index.d.ts",
@@ -23,6 +34,7 @@
     "build": "tsc && vite build --config vite-build.config.ts"
   },
   "dependencies": {
+    "clsx": "^2.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
@@ -54,10 +66,10 @@
     "vite-plugin-dts": "3.8.3"
   },
   "peerDependencies": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
     "@mantine/core": "^7.8.0",
-    "@mantine/hooks": "^7.8.0"
+    "@mantine/hooks": "^7.8.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "files": [
     "dist"

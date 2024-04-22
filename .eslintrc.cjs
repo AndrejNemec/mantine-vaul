@@ -29,12 +29,23 @@ module.exports = {
         'quotes': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/semi': ['error', 'never'],
-        '@typescript-eslint/member-delimiter-style': 'error',
+        '@typescript-eslint/member-delimiter-style': ['error', {
+            'multiline': {
+                'delimiter': 'none',
+                'requireLast': true
+            },
+            'singleline': {
+                'delimiter': 'comma',
+                'requireLast': true
+            },
+            'multilineDetection': 'brackets'
+        }],
         'unused-imports/no-unused-imports': 'error',
         'unused-imports/no-unused-vars': [
-          'warn',
-          { 'vars': 'all', 'varsIgnorePattern': '^_', 'args': 'after-used', 'argsIgnorePattern': '^_' }
+            'warn',
+            { 'vars': 'all', 'varsIgnorePattern': '^_', 'args': 'after-used', 'argsIgnorePattern': '^_' }
         ],
-        '@typescript-eslint/ban-ts-comment': 'off'
+        '@typescript-eslint/ban-ts-comment': 'off',
+        'react/prop-types': 'off'
     },
 }
