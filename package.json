@@ -1,7 +1,7 @@
 {
   "name": "mantine-vaul",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Mantine port of Vaul drawer component optimized for mobile devices.",
   "packageManager": "pnpm@8.4.0",
   "repository": {
@@ -27,7 +27,7 @@
       "import": "./dist/mantine-vaul.es.js",
       "require": "./dist/mantine-vaul.umd.js"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css"
   },
   "scripts": {
     "dev": "vite --config vite-dev.config.ts",

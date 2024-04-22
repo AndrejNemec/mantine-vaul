@@ -12,6 +12,7 @@
 ## Use the drawer in your app.
 
 ```jsx
+import 'mantine-vaul/style.css'
 import { Box, Button, Text } from '@mantine/core'
 import { useState } from 'react'
 import { Vaul } from 'mantine-vaul'
