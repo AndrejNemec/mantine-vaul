@@ -186,8 +186,5 @@
 .footer {
   width: 100%;
   padding: var(--mantine-spacing-xs);
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  margin-top: auto;
 }
