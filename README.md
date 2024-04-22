@@ -1,16 +1,15 @@
 # mantine-vaul
 
-Mantine port of Vaul drawer component optimized for mobile devices. 
+## Mantine port of Vaul drawer component optimized for mobile devices. 
 
-This is a fork of the https://github.com/emilkowalski/vaul project by Emil Kowalski.
-
-
-install:
-
-pnpm add mantine-vaul @mantine/core @mantine/hooks
+### This is a fork of the https://github.com/emilkowalski/vaul project by Emil Kowalski.
 
 
-Use the drawer in your app.
+## install:
+
+`pnpm add mantine-vaul @mantine/core @mantine/hooks`
+
+## Use the drawer in your app.
 
 ```jsx
 import { Box, Button, Text } from '@mantine/core'
@@ -46,7 +45,7 @@ export const App = () => {
 }
 ```
 
-Props:
+## Props:
 `opened`: This prop determines whether the drawer is currently open or closed. When set to true, the drawer is displayed in the open state, while setting it to false closes the drawer.
 
 `onOpenChange`: This prop is a callback function that is called whenever the state of the drawer (opened or closed) changes.
