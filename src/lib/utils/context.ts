@@ -1,55 +1,32 @@
-import type {  RefObject, PointerEvent, MutableRefObject } from 'react'
-import {createContext, useContext} from 'react'
-import { type DrawerDirection } from './types'
-import type { GetStylesApi } from '@mantine/core'
-import type { VaulRootFactory } from '../VaulRoot'
+import type { GetStylesApi} from '@mantine/core'
+import { createSafeContext } from '@mantine/core'
+import type { BaseVaulRootProps, VaulRootFactory } from '../VaulRoot'
+import type { Dispatch, SetStateAction } from 'react'
 
 export type ScrollAreaComponent = React.FC<any>
 
-export type DrawerContextValue = {
-  drawerRef: RefObject<HTMLDivElement>
-  overlayRef: RefObject<HTMLDivElement>
-  scaleBackground: (open: boolean) => void
-  onPress: (event: PointerEvent<HTMLDivElement>) => void
-  onRelease: (event: PointerEvent<HTMLDivElement>) => void
-  onDrag: (event: PointerEvent<HTMLDivElement>) => void
-  onNestedDrag: (event: PointerEvent<HTMLDivElement>, percentageDragged: number) => void
-  onNestedOpenChange: (o: boolean) => void
-  onNestedRelease: (event: PointerEvent<HTMLDivElement>, open: boolean) => void
-  dismissible: boolean
-  isOpen: boolean
-  keyboardIsOpen: MutableRefObject<boolean>
-  snapPointsOffset: number[] | null
-  snapPoints?: (number | string)[] | null
-  shouldFade: boolean
-  activeSnapPoint?: number | string | null
-  setActiveSnapPoint: (o: number | string | null) => void
-  visible: boolean
-  closeDrawer: () => void
-  setVisible: (o: boolean) => void
-  openProp?: boolean
-  onOpenChange?: (o: boolean) => void
-  direction: DrawerDirection
-  closeOnEscape: boolean
-  closeOnOutsideClick: boolean
+export type DrawerContextValue = Omit<BaseVaulRootProps, 'scrollContainerRef'> & {
   getStyles: GetStylesApi<VaulRootFactory>
   variant: string | undefined
   unstyled: boolean | undefined
-  uid: string
-  scrollAreaComponent: ScrollAreaComponent | undefined
-  trapFocus: boolean
+  prevSnapPointIndex: number
+  updateSnapPointIndex: (value: number) => void
+  handleDissmiss: () => void
+  scrollContainerRef: (node: HTMLDivElement | null) => void
+  parsedSnapPoints: number[]
+  currentSnapPoint: number
+  largetsSnapPoint: number
+  isLargestSnapPoint: boolean
+  isSmallestSnapPoint: boolean
+  transform: number
+  resultingTransform: number
+  setTransform: Dispatch<SetStateAction<number>>
+  viewportHeight: number
+  handleGestureMove: (y: number, disableScrollCondition?: boolean) => void
+  handleGestureEnd: () => void
 }
 
-export const VaulContext = createContext<DrawerContextValue>(null as unknown as DrawerContextValue)
-const { Provider: VaulContextProvider } = VaulContext
-
-const useVaulContext = (throwNotFoundContext: boolean = true) => {
-  const context = useContext(VaulContext)
-  if (throwNotFoundContext && !context) {
-    throw new Error('[mantine-vaul] VaulContext was not found, make sure you are using Mantine Vaul components inside <VaulRoot/>.')
-  }
-  return context
-}
+const [VaulContextProvider, useVaulContext] = createSafeContext<DrawerContextValue>('[mantine-vaul] VaulContext was not found, make sure you are using Mantine Vaul components inside <VaulRoot/>.')
 
 export {
   VaulContextProvider,

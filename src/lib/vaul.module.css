@@ -3,159 +3,145 @@
   --vaul-handler-radius: var(--mantine-radius-default);
   --vaul-z-index: var(--mantine-z-index-modal);
   --vaul-overlay-z-index: var(--vaul-z-index);
+
+  --vaul-shadow-none: 0 0 0 rgb(0 0 0 / 0.0);
+  --vaul-shadow-xs: 0 calc(0.5rem * var(--mantine-scale)) calc(0.5rem * var(--mantine-scale)) rgb(0 0 0 / 0.20);
+  --vaul-shadow-sm: 0 calc(1rem * var(--mantine-scale)) calc(1rem * var(--mantine-scale)) rgb(0 0 0 / 0.28);
+  --vaul-shadow-md: 0 calc(1.5rem * var(--mantine-scale)) calc(1.5rem * var(--mantine-scale)) rgb(0 0 0 / 0.36);
+  --vaul-shadow-lg: 0 calc(2rem * var(--mantine-scale)) calc(2rem * var(--mantine-scale)) rgb(0 0 0 / 0.48);
+  --vaul-shadow-xl: 0 calc(3rem * var(--mantine-scale)) calc(3rem * var(--mantine-scale)) rgb(0 0 0 / 0.56);
+
+  --vaul-shadow: var(--vaul-shadow-md);
+
+  pointer-events: none;
+  position: fixed;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 .content {
-  touch-action: none;
-  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: var(--vaul-z-index);
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
+  bottom: 0;
   background-color: var(--mantine-color-body);
   display: flex;
   flex-direction: column;
   border-top-left-radius: var(--vaul-radius);
   border-top-right-radius: var(--vaul-radius);
+  width: 100%;
+  margin: 0 auto;
+  height: var(--vaul-height);
+  transform: translate3d(0, calc(100% + var(--vaul-transform)), 0);
+  filter: drop-shadow(var(--vaul-shadow));
+
+  &[data-animate="true"] {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-duration: 300ms;
+  }
+
+  pointer-events: none;
+
+  [data-state='opened'] & {
+    pointer-events: auto;
+    touch-action: none;
+    overscroll-behavior: none;
+  }
+}
+
+.inner {
+  width: 100%;
   height: 100%;
-  max-height: 96%;
-  margin-top: rem(96px);
 
-  &[data-state="closed"] {
-    display: none;
-  }
-
-  &[data-direction='bottom'] {
-    transform: translate3d(0, 100%, 0);
-  }
-
-  &[data-direction='top'] {
-    transform: translate3d(0, -100%, 0);
-  }
-
-  &[data-direction='left'] {
-    transform: translate3d(-100%, 0, 0);
-  }
-
-  &[data-direction='right'] {
-    transform: translate3d(100%, 0, 0);
-  }
-
-  &.mantine-vaul-dragging {
-    &[data-direction='top'] .vaul-scrollable {
-      overflow-y: hidden !important;
+  &[data-customscroll="true"] {
+    [data-vaul-scroll-container="true"] {
+      width: 100%;
+      max-height: var(--vaul-height);
+      margin-bottom: calc(var(--vaul-largets-snap-point) + var(--vaul-transform));
     }
 
-    &[data-direction='bottom'] .vaul-scrollable {
-      overflow-y: hidden !important;
+    &[data-animate="true"] [data-vaul-scroll-container="true"] {
+      transition-property: margin-bottom;
+      transition-timing-function: cubic-bezier(0.25,0.46,0.45,0.94);
+      transition-duration: 300ms;
     }
-
-    &[data-direction='left'] .vaul-scrollable {
-      overflow-x: hidden !important;
-    }
-
-    &[data-direction='right'] .vaul-scrollable {
-      overflow-x: hidden !important;
-    }
-  }
-
-  &[data-visible='true'][data-direction='top'] {
-    transform: translate3d(0, var(--snap-point-height, 0), 0);
-  }
-
-  &[data-visible='true'][data-direction='bottom'] {
-    transform: translate3d(0, var(--snap-point-height, 0), 0);
-  }
-
-  &[data-visible='true'][data-direction='left'] {
-    transform: translate3d(var(--snap-point-height, 0), 0, 0);
-  }
-
-  &[data-visible='true'][data-direction='right'] {
-    transform: translate3d(var(--snap-point-height, 0), 0, 0);
-  }
-
-  &[data-direction='top']::after {
-    top: initial;
-    bottom: 100%;
-    left: 0;
-    right: 0;
-    height: 200%;
-  }
   
-  &[data-direction='bottom']::after {
-    top: 100%;
-    bottom: initial;
-    left: 0;
-    right: 0;
-    height: 200%;
-  }
+    &:not([data-largestsnappoint="true"]) [data-vaul-scroll-container="true"] {
+      touch-action: none;
+    }
   
-  &[data-direction='left']::after {
-    left: initial;
-    right: 100%;
-    top: 0;
-    bottom: 0;
-    width: 200%;
-  }
+    &[transform="true"] [data-vaul-scroll-container="true"] {
+      overscroll-behavior: none;
+    }
   
-  &[data-direction='right']::after {
-    left: 100%;
-    right: initial;
-    top: 0;
-    bottom: 0;
-    width: 200%;
+    &:not([transform="true"]) [data-vaul-scroll-container="true"] {
+      overscroll-behavior: contain;
+    }
+  }
+
+  &:not([data-customscroll="true"]) {
+    overflow-y: auto;
+
+    &[data-animate="true"] {
+      transition-property: margin-bottom;
+      transition-timing-function: cubic-bezier(0.25,0.46,0.45,0.94);
+      transition-duration: 300ms;
+    }
+  
+    &:not([data-largestsnappoint="true"]) {
+      touch-action: none;
+    }
+  
+    &[transform="true"] {
+      overscroll-behavior: none;
+    }
+  
+    &:not([transform="true"]) {
+      overscroll-behavior: contain;
+    }
+  
+    margin-bottom: calc(var(--vaul-largets-snap-point) + var(--vaul-transform));
+  }
+
+  pointer-events: none;
+
+  [data-state='opened'] & {
+    pointer-events: auto;
   }
 }
 
 .overlay {
   z-index: var(--vaul-overlay-z-index);
-  opacity: 0;
-  transition: opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  pointer-events: none;
 
-  &[data-visible='true'] {
-    opacity: 1;
-  }
-
-  &[data-state="closed"] {
-    display: none;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    background: inherit;
-    background-color: inherit;
-  }
-
-  &[data-snap-points='true']:not([data-snap-points-overlay='true']):not([data-visible='false']) {
-    opacity: 0;
-  }
-  
-  &[data-snap-points-overlay='true']:not([data-visible='false']) {
-    opacity: 1;
-  }
-}
-
-/* This will allow us to not animate via animation, but still benefit from delaying unmount via Radix. */
-@keyframes fake-animation {
-  from {
-  }
-  to {
+  [data-state='opened'] &[data-show='true'] {
+    pointer-events: auto;
+    touch-action: none;
+    overscroll-behavior: none;
   }
 }
 
 .handler {
+  touch-action: none;
   border-radius: var(--vaul-handler-radius);
   width: rem(48px);
   height: rem(6px);
   padding: rem(3px);
   background-color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3));
   margin-top: rem(6px);
+
+  pointer-events: none;
+
+  [data-state='opened'] & {
+    pointer-events: auto;
+  }
 }
 
 .header {
+  background-color: var(--mantine-color-body);
+  touch-action: none;
   border-top-left-radius: var(--vaul-radius);
   border-top-right-radius: var(--vaul-radius);
   display: flex;
@@ -165,6 +151,17 @@
   gap: var(--mantine-spacing-lg);
   width: 100%;
   padding: var(--mantine-spacing-xs) 0;
+
+  pointer-events: none;
+
+  [data-state='opened'] & {
+    pointer-events: auto;
+  }
+
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .title {
@@ -177,14 +174,23 @@
 }
 
 .body {
-  width: 100%;
-  height: 100%;
   padding: var(--mantine-spacing-xs);
-  overflow-y: auto;
 }
 
 .footer {
   width: 100%;
   padding: var(--mantine-spacing-xs);
-  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  pointer-events: none;
+
+  [data-state='opened'] & {
+    pointer-events: auto;
+  }
+
+  background-color: var(--mantine-color-body);
+  border-top: rem(1px) solid light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3));
 }

@@ -29,6 +29,7 @@ export const VaulTitle = polymorphicFactory<VaulTitleFactory>((_props: VaulTitle
         styles,
         component = 'h2',
         vars,
+        mod,
         ...rest
     } = useProps('VaulTitle', defaultProps, _props)
 
@@ -40,7 +41,7 @@ export const VaulTitle = polymorphicFactory<VaulTitleFactory>((_props: VaulTitle
     return (
         <Box
             ref={ref}
-            data-part="title"
+            mod={[{ part: 'title' }, mod]}
             component={component}
             {...getStyles('title', { className, classNames, styles, style, variant })}
             {...rest as any}

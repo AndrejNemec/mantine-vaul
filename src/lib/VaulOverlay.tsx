@@ -1,8 +1,7 @@
-import type { PointerEvent, MouseEvent } from 'react'
-import { useComposedRefs } from './hooks/use-composed-refs'
+import { useMemo, type PointerEvent } from 'react'
 import { useVaulContext } from './utils/context'
-import type { CompoundStylesApiProps, ElementProps, ExtendComponent, Factory, MantineThemeComponent, OverlayProps } from '@mantine/core'
-import { Overlay, factory, useProps } from '@mantine/core'
+import type { CompoundStylesApiProps, ElementProps, ExtendComponent, Factory, MantineThemeComponent, OverlayProps, TransitionOverride } from '@mantine/core'
+import { Overlay, Transition, factory, useProps } from '@mantine/core'
 import classes from './vaul.module.css'
 import type { VaulClasses } from './utils'
 
@@ -11,7 +10,7 @@ export type VaulOverlayStylesNames = 'overlay'
 export interface VaulOverlayProps extends Omit<OverlayProps, 'styles' | 'classNames' | 'variant' | 'vars' | 'fixed'>,
     ElementProps<'div', 'color'>,
     CompoundStylesApiProps<VaulOverlayFactory> {
-
+        transitionProps?: TransitionOverride
 }
 
 export type VaulOverlayFactory = Factory<{
@@ -26,59 +25,54 @@ const defaultProps: VaulOverlayProps = {
 
 export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
     const {
-        onMouseUp: onMouseUpProp,
         className,
         zIndex,
-        onClick: onClickProp,
+        onPointerDown: onPointerDownProp,
         vars,
         classNames,
         styles,
         style,
+        mod,
+        transitionProps,
+        unstyled: unstyledProp,
         ...rest
     } = useProps('VaulContent', defaultProps, _props)
 
     const {
-        overlayRef,
-        snapPoints,
-        onRelease,
-        shouldFade,
-        isOpen,
-        visible,
+        activeSnapPointIndex,
+        largestUndimmedSnapPointIndex,
+        opened,
         closeOnOutsideClick,
-        closeDrawer,
         getStyles,
-        variant
+        variant,
+        handleDissmiss,
+        unstyled
     } = useVaulContext()
-    const composedRef = useComposedRefs(ref, overlayRef)
-    const hasSnapPoints = snapPoints && snapPoints.length > 0
 
-    const onMouseUp = (event: PointerEvent<HTMLDivElement>) => {
-        onRelease(event)
-        onMouseUpProp?.(event)
-    }
+    const showOverlay = useMemo<boolean>(() => activeSnapPointIndex! > largestUndimmedSnapPointIndex!, [activeSnapPointIndex, largestUndimmedSnapPointIndex])
 
-    const onClick = (event: MouseEvent<HTMLDivElement>) => {
+    const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
         if (closeOnOutsideClick) {
-            closeDrawer()
+            handleDissmiss()
         }
-        onClickProp?.(event)
+        onPointerDownProp?.(event)
     }
 
     return (
-        <Overlay
-            fixed
-            zIndex={zIndex}
-            ref={composedRef}
-            onMouseUp={onMouseUp}
-            onClick={onClick}
-            data-part="overlay"
-            data-visible={visible ? 'true' : 'false'}
-            data-state={isOpen ? 'open' : 'closed'}
-            data-snap-points={isOpen && hasSnapPoints ? 'true' : 'false'}
-            data-snap-points-overlay={isOpen && shouldFade ? 'true' : 'false'}
-            {...getStyles('overlay', { classNames, style, styles, className, variant })}
-            {...rest}
-        />
+        <Transition mounted={(opened! && showOverlay)} {...transitionProps} transition="fade">
+            {(transitionStyles) => (
+                <Overlay
+                    unstyled={unstyledProp || unstyled}
+                    fixed
+                    zIndex={zIndex}
+                    ref={ref}
+                    onPointerDown={onPointerDown}
+                    mod={[{ part: 'overlay', show: showOverlay }, mod]}
+                    {...getStyles('overlay', { classNames, style: [style, transitionStyles], styles, className, variant })}
+                    {...rest}
+                />
+            )}
+        </Transition>
     )
 })
 

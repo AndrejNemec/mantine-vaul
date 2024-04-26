@@ -1,5 +1,5 @@
 import type { BoxProps, CompoundStylesApiProps, ElementProps, ExtendComponent, Factory, MantineThemeComponent } from '@mantine/core'
-import { Box, NativeScrollArea, factory, useProps } from '@mantine/core'
+import { Box, factory, useProps } from '@mantine/core'
 import type { VaulClasses } from './utils'
 import { useVaulContext } from './utils'
 import classes from './vaul.module.css'
@@ -19,7 +19,7 @@ const defaultProps: VaulBodyProps = {
 
 }
 
-export const VaulBody = factory<VaulBodyFactory>((_props, ref,) => {
+export const VaulBody = factory<VaulBodyFactory>((_props, ref) => {
     const {
         style,
         className,
@@ -32,22 +32,16 @@ export const VaulBody = factory<VaulBodyFactory>((_props, ref,) => {
 
     const {
         getStyles,
-        variant,
-        scrollAreaComponent
+        variant
     } = useVaulContext()
-
-    const Scroll: React.FC<any> = scrollAreaComponent || NativeScrollArea
 
     return (
         <Box
             ref={ref}
-            data-part="body"
             {...getStyles('body', { className, classNames, styles, style, variant })}
             {...rest as any}
         >
-            <Scroll>
-                {children}
-            </Scroll>
+            {children}
         </Box>
     )
 })

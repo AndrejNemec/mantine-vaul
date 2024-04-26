@@ -44,7 +44,7 @@ const app = async (): Promise<UserConfigExport> => {
         fileName: (format) => `${formattedName}.${format}.js`,
       },
       rollupOptions: {
-        external: ['react', 'react/jsx-runtime', 'react-dom', '@mantine/core', '@mantine/hooks'],
+        external: ['react', 'react/jsx-runtime', 'react-dom', '@mantine/core', '@mantine/hooks', '@use-gesture/react'],
         output: {
           globals: {
             react: 'React',

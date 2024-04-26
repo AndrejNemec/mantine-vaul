@@ -26,6 +26,7 @@ export const VaulHandler = factory<VaulHandlerFactory>((_props, ref,) => {
         classNames,
         styles,
         vars,
+        mod,
         ...rest
     } = useProps('VaulHandler', defaultProps, _props)
 
@@ -37,7 +38,7 @@ export const VaulHandler = factory<VaulHandlerFactory>((_props, ref,) => {
     return (
         <Box
             ref={ref}
-            data-part="handler"
+            mod={[{ part: 'handler' }, mod]}
             {...getStyles('handler', { className, classNames, styles, style, variant })}
             {...rest as any}
         />

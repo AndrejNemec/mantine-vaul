@@ -1,11 +1,11 @@
-import type { CSSProperties, PointerEvent } from 'react'
-import { useEffect, useRef } from 'react'
 import type { BoxProps, CompoundStylesApiProps, ElementProps, ExtendComponent, Factory, MantineThemeComponent } from '@mantine/core'
-import { Box, FocusTrap, factory, useProps } from '@mantine/core'
-import type { DrawerDirection, VaulClasses } from './utils'
+import { Box, FocusTrap, NativeScrollArea, factory, useProps } from '@mantine/core'
+import type { VaulClasses } from './utils'
 import { useVaulContext } from './utils'
-import { useComposedRefs } from './hooks'
 import classes from './vaul.module.css'
+import { useDrag } from '@use-gesture/react'
+import { mergeRefs, useId, useMergedRef } from '@mantine/hooks'
+import { useRef } from 'react'
 
 export interface VaulContentProps extends BoxProps, CompoundStylesApiProps<VaulContentFactory>, ElementProps<'div'> {
 }
@@ -19,117 +19,98 @@ export type VaulContentFactory = Factory<{
 }>
 
 const defaultProps: VaulContentProps = {
-
 }
 
-export const VaulContent = factory<VaulContentFactory>((_props, ref,) => {
+export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
+    const ref = useRef<HTMLDivElement>(null)
+    const mergedRefs = useMergedRef(ref, refProp)
+
     const {
         children,
-        style: styleProp = {},
+        style,
         className: classNameProp,
         classNames,
         styles,
         vars,
+        id: idProp,
+        mod,
         ...rest
     } = useProps('VaulContent', defaultProps, _props)
 
+    const id = useId(idProp)
+
     const {
-        drawerRef,
-        onPress,
-        onRelease,
-        onDrag,
-        snapPointsOffset,
-        visible,
-        setVisible,
-        direction,
-        isOpen,
+        opened,
+        trapFocus,
         getStyles,
         variant,
-        trapFocus,
+        largetsSnapPoint,
+        transform,
+        handleGestureEnd,
+        handleGestureMove,
+        resultingTransform,
+        scrollContainerRef,
+        scrollAreaComponent,
+        scrollAreaComponentProps,
+        prevSnapPointIndex,
+        activeSnapPointIndex,
+        isLargestSnapPoint
     } = useVaulContext()
 
-    const composedRef = useComposedRefs(ref, drawerRef)
-    const pointerStartRef = useRef<{ x: number, y: number, } | null>(null)
-
-    useEffect(() => {
-        // Trigger enter animation without using CSS animation
-        setVisible(true)
-    }, [])
-
-    const isDeltaInDirection = (delta: { x: number, y: number, }, direction: DrawerDirection, threshold = 0) => {
-        const deltaX = Math.abs(delta.x)
-        const deltaY = Math.abs(delta.y)
-        const isDeltaX = deltaX > deltaY
-        if (direction === 'left' || direction === 'right') {
-            return isDeltaX && deltaX > threshold
+    useDrag(({ down, movement: [_, my], event }) => {
+        event.stopPropagation()
+        if (down) {
+            handleGestureMove(my)
+        } else {
+            handleGestureEnd()
         }
-        return !isDeltaX && deltaY > threshold
-    }
+    }, {
+        eventOptions: { passive: false },
+        target: ref
+    })
 
-    const style = {
-        ...(snapPointsOffset && snapPointsOffset.length > 0 ? ({
-            '--snap-point-height': `${snapPointsOffset[0]!}px`,
-            ...styleProp,
-        }) : {}),
-        ...styleProp
-    } as CSSProperties
-
-    const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-        rest.onPointerDown?.(event)
-        pointerStartRef.current = { x: event.clientX, y: event.clientY }
-        onPress(event)
-    }
-
-    const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-        rest.onPointerMove?.(event)
-        if (!pointerStartRef.current) return null
-        const yPosition = event.clientY - pointerStartRef.current.y
-        const xPosition = event.clientX - pointerStartRef.current.x
-
-        const isHorizontalSwipe = ['left', 'right'].includes(direction)
-        const clamp = ['left', 'top'].includes(direction) ? Math.min : Math.max
-
-        const clampedX = isHorizontalSwipe ? clamp(0, xPosition) : 0
-        const clampedY = !isHorizontalSwipe ? clamp(0, yPosition) : 0
-        const swipeStartThreshold = event.pointerType === 'touch' ? 10 : 2
-        const delta = { x: clampedX, y: clampedY }
-
-        const isAllowedToSwipe = isDeltaInDirection(delta, direction, swipeStartThreshold)
-        if (isAllowedToSwipe) {
-            onDrag(event)
-            return
-        }
-        if (Math.abs(xPosition) > swipeStartThreshold || Math.abs(yPosition) > swipeStartThreshold) {
-            pointerStartRef.current = null
-        }
-    }
-
-    const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
-        rest.onPointerUp?.(event)
-        pointerStartRef.current = null
-        onRelease(event)
-    }
+    const Scroll: React.FC<any> = scrollAreaComponent || NativeScrollArea
 
     return (
-        <Box
-            ref={composedRef}
-            role="dialog"
-            aria-modal
-            tabIndex={-1}
-            data-part="content"
-            data-state={isOpen ? 'open' : 'closed'}
-            data-direction={direction}
-            data-visible={visible ? 'true' : 'false'}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            {...getStyles('content', { className: classNameProp, classNames, styles, style, variant })}
-            {...rest as any}
-        >
-            <FocusTrap active={isOpen && trapFocus}>
-                {children}
-            </FocusTrap>
-        </Box>
+        <FocusTrap active={opened && trapFocus}>
+            <Box
+                ref={mergedRefs}
+                id={id}
+                role="dialog"
+                aria-modal
+                tabIndex={-1}
+                {...rest as any}
+                {...getStyles('content', { className: classNameProp, classNames, styles, style, variant })}
+                mod={[{ animate: transform === 0, part: 'content' }, mod]}
+                __vars={{
+                    '--vaul-height': `${largetsSnapPoint}px`,
+                    '--vaul-transform': `${resultingTransform}px`
+                }}
+            >
+                <Box
+                    ref={mergeRefs(scrollAreaComponent ? undefined : scrollContainerRef)}
+                    mod={{
+                        part: 'inner',
+                        animate: opened && transform === 0 && (prevSnapPointIndex > activeSnapPointIndex!),
+                        largestSnapPoint: isLargestSnapPoint,
+                        transform: transform !== 0,
+                        customScroll: !!scrollAreaComponent
+                    }}
+                    {...getStyles('inner')}
+                >
+                    <Scroll {
+                        ...(scrollAreaComponent ? {
+                            ...(scrollAreaComponentProps || {}),
+                            viewportProps: { ...(scrollAreaComponentProps?.viewportProps || {}), 'data-vaul-scroll-container': true },
+                            viewportRef: mergeRefs(scrollContainerRef, scrollAreaComponentProps?.viewportRef)
+                        } : {}
+                        )}>
+                        {children}
+                    </Scroll>
+                </Box>
+            </Box>
+        </FocusTrap>
+
     )
 })
 

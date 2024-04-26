@@ -26,6 +26,7 @@ export const VaulFooter = factory<VaulFooterFactory>((_props, ref,) => {
         classNames,
         styles,
         vars,
+        mod,
         ...rest
     } = useProps('VaulFooter', defaultProps, _props)
 
@@ -37,7 +38,7 @@ export const VaulFooter = factory<VaulFooterFactory>((_props, ref,) => {
     return (
         <Box
             ref={ref}
-            data-part="footer"
+            mod={[{ part: 'footer' }, mod]}
             {...getStyles('footer', { className, classNames, styles, style, variant })}
             {...rest as any}
         />

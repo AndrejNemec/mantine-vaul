@@ -16,14 +16,11 @@ devDependencies:
     specifier: 7.24.4
     version: 7.24.4
   '@mantine/core':
-    specifier: ^7.8.0
-    version: 7.8.0(@mantine/hooks@7.8.0)(@types/react@18.2.79)(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^7.8.1
+    version: 7.8.1(@mantine/hooks@7.8.1)(@types/react@18.2.79)(react-dom@18.2.0)(react@18.2.0)
   '@mantine/hooks':
-    specifier: ^7.8.0
-    version: 7.8.0(react@18.2.0)
-  '@mantine/modals':
-    specifier: ^7.8.0
-    version: 7.8.0(@mantine/core@7.8.0)(@mantine/hooks@7.8.0)(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^7.8.1
+    version: 7.8.1(react@18.2.0)
   '@types/node':
     specifier: 20.12.7
     version: 20.12.7
@@ -39,6 +36,9 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^7.7.0
     version: 7.7.0(eslint@8.56.0)(typescript@5.4.5)
+  '@use-gesture/react':
+    specifier: ^10.3.1
+    version: 10.3.1(react@18.2.0)
   '@vitejs/plugin-react':
     specifier: 4.2.1
     version: 4.2.1(vite@5.2.10)
@@ -669,15 +669,15 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /@mantine/core@7.8.0(@mantine/hooks@7.8.0)(@types/react@18.2.79)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-19RKuNdJ/s8pZjy2w2rvTsl4ybi/XM6vf+Kc0WY7kpLFCvdG+/UxNi1MuJF8t2Zs0QSFeb/H5yZQNe0XPbegHw==}
+  /@mantine/core@7.8.1(@mantine/hooks@7.8.1)(@types/react@18.2.79)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-dttbP2BhBzFJYBqgAQedJRca5+MXlJbppRhRsufnFeO7YC/UpZutOoHQ9dxGEQnhAWJ/d+wuRvYWG/gXex+wYQ==}
     peerDependencies:
-      '@mantine/hooks': 7.8.0
+      '@mantine/hooks': 7.8.1
       react: ^18.2.0
       react-dom: ^18.2.0
     dependencies:
       '@floating-ui/react': 0.26.12(react-dom@18.2.0)(react@18.2.0)
-      '@mantine/hooks': 7.8.0(react@18.2.0)
+      '@mantine/hooks': 7.8.1(react@18.2.0)
       clsx: 2.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -689,26 +689,12 @@ packages:
       - '@types/react'
     dev: true
 
-  /@mantine/hooks@7.8.0(react@18.2.0):
-    resolution: {integrity: sha512-+70fkgjhVJeJ+nJqnburIM3UAsfvxat1Low9HMPobLbv64FIdB4Nzu5ct3qojNQ58r5sK01tg5UoFIJYslaVrg==}
+  /@mantine/hooks@7.8.1(react@18.2.0):
+    resolution: {integrity: sha512-zCLqnxTUR2N6Awbt4rv/26UKTc75dXTVmCPsWUb6wdQExuC28fucG6kMoNYHVmOBDq9f3KP9zWOGDelHM2ogZA==}
     peerDependencies:
       react: ^18.2.0
     dependencies:
       react: 18.2.0
-    dev: true
-
-  /@mantine/modals@7.8.0(@mantine/core@7.8.0)(@mantine/hooks@7.8.0)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-/Kxquz8U7xau9PoqPi5Pjysfnq8b48VRAMp62B+SsPWNTH47R0F7dYRYpLQ2/0VU+OWGY0lOshxpgA61sZ3IPA==}
-    peerDependencies:
-      '@mantine/core': 7.8.0
-      '@mantine/hooks': 7.8.0
-      react: ^18.2.0
-      react-dom: ^18.2.0
-    dependencies:
-      '@mantine/core': 7.8.0(@mantine/hooks@7.8.0)(@types/react@18.2.79)(react-dom@18.2.0)(react@18.2.0)
-      '@mantine/hooks': 7.8.0(react@18.2.0)
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
     dev: true
 
   /@microsoft/api-extractor-model@7.28.13(@types/node@20.12.7):
@@ -1182,6 +1168,19 @@ packages:
 
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
+    dev: true
+
+  /@use-gesture/core@10.3.1:
+    resolution: {integrity: sha512-WcINiDt8WjqBdUXye25anHiNxPc0VOrlT8F6LLkU6cycrOGUDyY/yyFmsg3k8i5OLvv25llc0QC45GhR/C8llw==}
+    dev: true
+
+  /@use-gesture/react@10.3.1(react@18.2.0):
+    resolution: {integrity: sha512-Yy19y6O2GJq8f7CHf7L0nxL8bf4PZCPaVOCgJrusOeFHY1LvHgYXnmnXg6N5iwAnbgbZCDjo60SiM6IPJi9C5g==}
+    peerDependencies:
+      react: '>= 16.8.0'
+    dependencies:
+      '@use-gesture/core': 10.3.1
+      react: 18.2.0
     dev: true
 
   /@vitejs/plugin-react@4.2.1(vite@5.2.10):

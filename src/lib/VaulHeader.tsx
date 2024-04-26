@@ -3,6 +3,9 @@ import { Box, factory, useProps } from '@mantine/core'
 import type { VaulClasses } from './utils'
 import { useVaulContext } from './utils'
 import classes from './vaul.module.css'
+import { useDrag } from '@use-gesture/react'
+import { useRef } from 'react'
+import { useMergedRef } from '@mantine/hooks'
 
 export interface VaulHeaderProps extends BoxProps, CompoundStylesApiProps<VaulHeaderFactory>, ElementProps<'div'> {
 }
@@ -19,25 +22,43 @@ const defaultProps: VaulHeaderProps = {
 
 }
 
-export const VaulHeader = factory<VaulHeaderFactory>((_props, ref,) => {
+export const VaulHeader = factory<VaulHeaderFactory>((_props, refProp) => {
+    const ref = useRef<HTMLDivElement>(null)
+    const mergedRefs = useMergedRef(ref, refProp)
+
     const {
         style,
         className,
         classNames,
         styles,
         vars,
+        mod,
         ...rest
     } = useProps('VaulHeader', defaultProps, _props)
 
     const {
         getStyles,
-        variant
+        variant,
+        handleGestureEnd,
+        handleGestureMove
     } = useVaulContext()
+
+    useDrag(({ down, movement: [_, my], event }) => {
+        event.stopPropagation()
+        if (down) {
+            handleGestureMove(my, true)
+        } else {
+            handleGestureEnd()
+        }
+    }, {
+        eventOptions: { passive: false },
+        target: ref
+    })
 
     return (
         <Box
-            ref={ref}
-            data-part="header"
+            ref={mergedRefs}
+            mod={[{ part: 'header' }, mod]}
             {...getStyles('header', { className, classNames, styles, style, variant })}
             {...rest as any}
         />

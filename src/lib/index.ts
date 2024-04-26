@@ -1,5 +1,4 @@
 export * from './utils'
-export * from './hooks'
 export * from './VaulRoot'
 export * from './VaulContent'
 export * from './VaulOverlay'
