@@ -102,10 +102,11 @@ export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
                         ...(scrollAreaComponent ? {
                             ...(scrollAreaComponentProps || {}),
                             viewportProps: { ...(scrollAreaComponentProps?.viewportProps || {}), 'data-vaul-scroll-container': true },
-                            viewportRef: mergeRefs(scrollContainerRef, scrollAreaComponentProps?.viewportRef)
+                            viewportRef: mergeRefs(scrollContainerRef, scrollAreaComponentProps?.viewportRef),
+                            h: `${Math.abs(resultingTransform)}px`,
                         } : {}
                         )}>
-                        {children}
+                        {opened ? children : null}
                     </Scroll>
                 </Box>
             </Box>

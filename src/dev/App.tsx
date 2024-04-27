@@ -28,7 +28,8 @@ export const App = () => {
                     radius='xl'
                     shadow='md'
                     largestUndimmedSnapPointIndex={0}
-                    scrollAreaComponent={ScrollArea.Autosize}
+                    scrollAreaComponent={ScrollArea}
+                    snapPoints={[160 , '50%', '75%', '100%']}
                     footer={
                         <Button w='100%'>
                             Hello world
