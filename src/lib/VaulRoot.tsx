@@ -70,7 +70,7 @@ export interface BaseVaulRootProps {
 
 export interface VaulRootProps extends BaseVaulRootProps, StylesApiProps<VaulRootFactory> {
     __staticSelector?: string
-    children: ReactNode
+    children: ReactNode | ((props: { close: () => void, scrollContainerRef: RefObject<HTMLDivElement>, opened: boolean, }) => ReactNode)
 }
 
 export type VaulRootFactory = Factory<{
@@ -347,7 +347,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
                             '--vaul-largets-snap-point': `${largetsSnapPoint}px`,
                         }}
                     >
-                        {children}
+                        {typeof children === 'function' ? children({ close: () => onChange(false), opened: value, scrollContainerRef: _scrollContainerRef }) : children}
                     </Box>
                 </RemoveScroll>
             </Portal>

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import type { BaseVaulRootProps, VaulRootCssVariables, VaulRootStylesNames } from './VaulRoot'
 import type { VaulOverlayProps } from './VaulOverlay'
 import { VaulOverlay } from './VaulOverlay'
@@ -24,7 +24,7 @@ export type VaulCssVariables = VaulRootCssVariables
 
 export interface VaulProps extends BaseVaulRootProps, StylesApiProps<VaulFactory> {
     __staticSelector?: string
-    children: ReactNode
+    children: ReactNode | ((props: { close: () => void, scrollContainerRef: RefObject<HTMLDivElement>, opened: boolean, }) => ReactNode)
     headerProps?: VaulHeaderProps
     contentProps?: VaulContentProps
     title?: ReactNode
@@ -79,29 +79,33 @@ export const Vaul = factory<VaulFactory>((_props, ref) => {
 
     return (
         <VaulRoot.Root {...others}>
-            {withOverlay && (
-                <VaulOverlay {...overlayProps} />
+            {(props) => (
+                <>
+                    {withOverlay && (
+                        <VaulOverlay {...overlayProps} />
+                    )}
+                    <VaulRoot.Content ref={ref} {...contentProps}>
+                        <Vaul.Header {...headerProps}>
+                            {withHandler && (
+                                <Vaul.Handler {...handlerProps} />
+                            )}
+                            {title && (
+                                <Vaul.Title {...titleProps}>
+                                    {title}
+                                </Vaul.Title>
+                            )}
+                        </Vaul.Header>
+                        <Vaul.Body {...bodyProps}>
+                            {typeof children === 'function' ? children(props) : children}
+                        </Vaul.Body>
+                        {footer &&
+                            <Vaul.Footer {...footerProps}>
+                                {footer}
+                            </Vaul.Footer>
+                        }
+                    </VaulRoot.Content>
+                </>
             )}
-            <VaulRoot.Content ref={ref} {...contentProps}>
-                <Vaul.Header {...headerProps}>
-                    {withHandler && (
-                        <Vaul.Handler {...handlerProps} />
-                    )}
-                    {title && (
-                        <Vaul.Title {...titleProps}>
-                            {title}
-                        </Vaul.Title>
-                    )}
-                </Vaul.Header>
-                <Vaul.Body {...bodyProps}>
-                    {children}
-                </Vaul.Body>
-                {footer &&
-                    <Vaul.Footer {...footerProps}>
-                        {footer}
-                    </Vaul.Footer>
-                }
-            </VaulRoot.Content>
         </VaulRoot.Root>
     )
 })
