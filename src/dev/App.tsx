@@ -1,4 +1,4 @@
-import { Box, Button, ScrollArea, Text, TextInput } from '@mantine/core'
+import { Box, Button, Text, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { Vaul } from '../lib'
 
@@ -27,9 +27,7 @@ export const App = () => {
                     onClose={setOpened}
                     radius='xl'
                     shadow='md'
-                    largestUndimmedSnapPointIndex={0}
-                    scrollAreaComponent={ScrollArea}
-                    snapPoints={[160 , '50%', '75%', '100%']}
+              
                     footer={
                         <Button w='100%'>
                             Hello world

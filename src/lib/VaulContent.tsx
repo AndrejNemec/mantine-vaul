@@ -6,6 +6,7 @@ import classes from './vaul.module.css'
 import { useDrag } from '@use-gesture/react'
 import { mergeRefs, useId, useMergedRef } from '@mantine/hooks'
 import { useRef } from 'react'
+import { useMountTransition } from './utils/useMountAnimation'
 
 export interface VaulContentProps extends BoxProps, CompoundStylesApiProps<VaulContentFactory>, ElementProps<'div'> {
 }
@@ -57,6 +58,8 @@ export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
         isLargestSnapPoint
     } = useVaulContext()
 
+    const isMounted = useMountTransition(opened!)
+
     useDrag(({ down, movement: [_, my], event }) => {
         event.stopPropagation()
         if (down) {
@@ -87,28 +90,30 @@ export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
                     '--vaul-transform': `${resultingTransform}px`
                 }}
             >
-                <Box
-                    ref={mergeRefs(scrollAreaComponent ? undefined : scrollContainerRef)}
-                    mod={{
-                        part: 'inner',
-                        animate: opened && transform === 0 && (prevSnapPointIndex > activeSnapPointIndex!),
-                        largestSnapPoint: isLargestSnapPoint,
-                        transform: transform !== 0,
-                        customScroll: !!scrollAreaComponent
-                    }}
-                    {...getStyles('inner')}
-                >
-                    <Scroll {
-                        ...(scrollAreaComponent ? {
-                            ...(scrollAreaComponentProps || {}),
-                            viewportProps: { ...(scrollAreaComponentProps?.viewportProps || {}), 'data-vaul-scroll-container': true },
-                            viewportRef: mergeRefs(scrollContainerRef, scrollAreaComponentProps?.viewportRef),
-                            h: `${Math.abs(resultingTransform)}px`,
-                        } : {}
-                        )}>
-                        {opened ? children : null}
-                    </Scroll>
-                </Box>
+                {isMounted ? (
+                    <Box
+                        ref={mergeRefs(scrollAreaComponent ? undefined : scrollContainerRef)}
+                        mod={{
+                            part: 'inner',
+                            'largest-snap-point': isLargestSnapPoint,
+                            transform: transform !== 0,
+                            'custom-scroll': !!scrollAreaComponent,
+                            animate: opened && transform === 0 && (prevSnapPointIndex > activeSnapPointIndex!),
+                        }}
+                        {...getStyles('inner')}
+                    >
+                        <Scroll {
+                            ...(scrollAreaComponent ? {
+                                ...(scrollAreaComponentProps || {}),
+                                viewportProps: { ...(scrollAreaComponentProps?.viewportProps || {}), 'data-vaul-scroll-container': true },
+                                viewportRef: mergeRefs(scrollContainerRef, scrollAreaComponentProps?.viewportRef),
+                                h: `${Math.abs(resultingTransform)}px`,
+                            } : {}
+                            )}>
+                            {children}
+                        </Scroll>
+                    </Box>
+                ) : null}
             </Box>
         </FocusTrap>
 

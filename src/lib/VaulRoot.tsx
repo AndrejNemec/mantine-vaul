@@ -154,6 +154,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
     const _scrollContainerRef = useRef<HTMLDivElement>(null)
     const scrollContainerRef = useMergedRef(_scrollContainerRef, scrollContainerRefProp)
 
+
     const [value, onChange] = useUncontrolled<boolean>({
         value: opened,
         onChange: onClose,
