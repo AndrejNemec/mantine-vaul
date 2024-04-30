@@ -12,7 +12,7 @@ root.render(
     <React.StrictMode>
         <MantineProvider
             theme={{
-                scale: 2,
+                scale: 1,
                 components: {
                     VaulContent: VaulContent.extend({
                         

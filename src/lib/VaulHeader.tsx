@@ -43,15 +43,15 @@ export const VaulHeader = factory<VaulHeaderFactory>((_props, refProp) => {
         handleGestureMove
     } = useVaulContext()
 
-    useDrag(({ down, movement: [_, my], event }) => {
+    useDrag(({ down, movement: [, y], event }) => {
         event.stopPropagation()
         if (down) {
-            handleGestureMove(my, true)
-        } else {
-            handleGestureEnd()
+            handleGestureMove({ y, event: event as TouchEvent, source: 'header' })
+            return
         }
+        handleGestureEnd()
     }, {
-        eventOptions: { passive: false },
+        eventOptions: { passive: true },
         target: ref
     })
 

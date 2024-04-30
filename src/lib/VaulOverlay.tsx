@@ -40,7 +40,7 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
 
     const {
         activeSnapPointIndex,
-        largestUndimmedSnapPointIndex,
+        largestSnapPointWithoutOverlayIndex,
         opened,
         closeOnOutsideClick,
         getStyles,
@@ -49,7 +49,8 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
         unstyled
     } = useVaulContext()
 
-    const showOverlay = useMemo<boolean>(() => activeSnapPointIndex! > largestUndimmedSnapPointIndex!, [activeSnapPointIndex, largestUndimmedSnapPointIndex])
+    const showOverlay = useMemo<boolean>(() => (activeSnapPointIndex! > largestSnapPointWithoutOverlayIndex!) && opened,
+     [activeSnapPointIndex, largestSnapPointWithoutOverlayIndex, opened])
 
     const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
         if (closeOnOutsideClick) {
@@ -59,7 +60,7 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
     }
 
     return (
-        <Transition mounted={(opened! && showOverlay)} {...transitionProps} transition="fade">
+        <Transition mounted={showOverlay} {...transitionProps} transition="fade">
             {(transitionStyles) => (
                 <Overlay
                     unstyled={unstyledProp || unstyled}
@@ -67,7 +68,7 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
                     zIndex={zIndex}
                     ref={ref}
                     onPointerDown={onPointerDown}
-                    mod={[{ part: 'overlay', show: showOverlay }, mod]}
+                    mod={[{ part: 'overlay' }, mod]}
                     {...getStyles('overlay', { classNames, style: [style, transitionStyles], styles, className, variant })}
                     {...rest}
                 />

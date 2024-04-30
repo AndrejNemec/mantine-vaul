@@ -1,4 +1,4 @@
-import type { ReactNode, RefObject } from 'react'
+import type { ReactNode } from 'react'
 import type { BaseVaulRootProps, VaulRootCssVariables, VaulRootStylesNames } from './VaulRoot'
 import type { VaulOverlayProps } from './VaulOverlay'
 import { VaulOverlay } from './VaulOverlay'
@@ -24,7 +24,7 @@ export type VaulCssVariables = VaulRootCssVariables
 
 export interface VaulProps extends BaseVaulRootProps, StylesApiProps<VaulFactory> {
     __staticSelector?: string
-    children: ReactNode | ((props: { close: () => void, scrollContainerRef: RefObject<HTMLDivElement>, opened: boolean, }) => ReactNode)
+    children: ReactNode | ((props: { close: () => void, opened: boolean, }) => ReactNode)
     headerProps?: VaulHeaderProps
     contentProps?: VaulContentProps
     title?: ReactNode

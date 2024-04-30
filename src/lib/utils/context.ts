@@ -1,28 +1,22 @@
 import type { GetStylesApi} from '@mantine/core'
 import { createSafeContext } from '@mantine/core'
-import type { BaseVaulRootProps, VaulRootFactory } from '../VaulRoot'
-import type { Dispatch, SetStateAction } from 'react'
+import type { VaulRootFactory } from '../VaulRoot'
 
 export type ScrollAreaComponent = React.FC<any>
 
-export type DrawerContextValue = Omit<BaseVaulRootProps, 'scrollContainerRef'> & {
+export type DrawerContextValue = {
   getStyles: GetStylesApi<VaulRootFactory>
   variant: string | undefined
   unstyled: boolean | undefined
-  prevSnapPointIndex: number
-  updateSnapPointIndex: (value: number) => void
+  opened: boolean
+  activeSnapPointIndex: number
+  largestSnapPointWithoutOverlayIndex: number
+  closeOnOutsideClick: boolean
+  closeOnEscape: boolean
+  trapFocus: boolean
+  scrollContainerProps?: Record<string, any>
   handleDissmiss: () => void
-  scrollContainerRef: (node: HTMLDivElement | null) => void
-  parsedSnapPoints: number[]
-  currentSnapPoint: number
-  largetsSnapPoint: number
-  isLargestSnapPoint: boolean
-  isSmallestSnapPoint: boolean
-  transform: number
-  resultingTransform: number
-  setTransform: Dispatch<SetStateAction<number>>
-  viewportHeight: number
-  handleGestureMove: (y: number, disableScrollCondition?: boolean) => void
+  handleGestureMove: (event: { y: number, event: TouchEvent, source: 'content' | 'header', }) => void
   handleGestureEnd: () => void
 }
 

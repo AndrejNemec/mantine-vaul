@@ -1,10 +1,10 @@
-import type { ComponentPropsWithRef, RefObject } from 'react'
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import type { ScrollAreaComponent, VaulClasses } from './utils'
+import type { ComponentPropsWithRef } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import type { VaulClasses } from './utils'
 import { VaulContextProvider, throttle } from './utils'
 import type { ExtendComponent, Factory, MantineRadius, MantineShadow, MantineThemeComponent, PortalProps, StylesApiProps } from '@mantine/core'
 import { Box, Portal, RemoveScroll, createVarsResolver, getRadius, useProps, useStyles, getSize } from '@mantine/core'
-import { useFocusReturn, useId, useMergedRef, useUncontrolled, useWindowEvent } from '@mantine/hooks'
+import { useFocusReturn, useId, useUncontrolled } from '@mantine/hooks'
 import classes from './vaul.module.css'
 import { VaulContent } from './VaulContent'
 import { VaulOverlay } from './VaulOverlay'
@@ -13,7 +13,8 @@ import { VaulHeader } from './VaulHeader'
 import { VaulTitle } from './VaulTitle'
 import { VaulBody } from './VaulBody'
 import { VaulFooter } from './VaulFooter'
-import { getSetValueByIndex } from './utils/getSetValueByIndex'
+import { setAttributeToElement, setVariableToElement } from './utils/styleHelpers'
+import { usePresence } from './hooks/usePresence'
 
 export type VaulRootStylesNames =
     | 'root'
@@ -38,7 +39,7 @@ export interface BaseVaulRootProps {
     setActiveSnapPointIndex?: (index: number) => void
 
     snapPoints?: Array<string | number>
-    largestUndimmedSnapPointIndex?: number
+    largestSnapPointWithoutOverlayIndex?: number
     expansionSwitchThreshold?: number
 
     dismissible?: boolean
@@ -47,10 +48,6 @@ export interface BaseVaulRootProps {
     onClose?: (value: boolean) => void
 
     portalTarget?: PortalProps['target']
-
-    scrollAreaComponent?: ScrollAreaComponent
-    scrollAreaComponentProps?: Record<string, any>
-    scrollContainerRef?: RefObject<HTMLDivElement>
 
     closeOnOutsideClick?: boolean
     closeOnEscape?: boolean
@@ -65,12 +62,13 @@ export interface BaseVaulRootProps {
     trapFocus?: boolean
     returnFocus?: boolean
 
+    scrollContainerProps?: Record<string, any>
     removeScrollProps?: ComponentPropsWithRef<typeof RemoveScroll>
 }
 
 export interface VaulRootProps extends BaseVaulRootProps, StylesApiProps<VaulRootFactory> {
     __staticSelector?: string
-    children: ReactNode | ((props: { close: () => void, scrollContainerRef: RefObject<HTMLDivElement>, opened: boolean, }) => ReactNode)
+    children: ReactNode | ((props: { close: () => void, opened: boolean, }) => ReactNode)
 }
 
 export type VaulRootFactory = Factory<{
@@ -100,13 +98,11 @@ const defaultProps: Omit<VaulRootProps, 'children'> = {
     trapFocus: true,
     returnFocus: true,
     dismissible: true,
-    largestUndimmedSnapPointIndex: -1,
+    largestSnapPointWithoutOverlayIndex: -1,
     expansionSwitchThreshold: 50,
     snapPoints: ['50%', '97%'],
     defaultActiveSnapPointIndex: 0
 }
-
-const openedVauls = new Set<string>()
 
 export const VaulRoot = (_props: VaulRootProps) => {
     const props = useProps('VaulRoot', defaultProps, _props)
@@ -121,7 +117,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
         setActiveSnapPointIndex: setActiveSnapPointIndexProp,
 
         snapPoints,
-        largestUndimmedSnapPointIndex,
+        largestSnapPointWithoutOverlayIndex,
         expansionSwitchThreshold,
 
         dismissible,
@@ -131,9 +127,6 @@ export const VaulRoot = (_props: VaulRootProps) => {
 
         portalTarget,
 
-        scrollAreaComponent,
-        scrollAreaComponentProps,
-
         closeOnOutsideClick,
         closeOnEscape,
 
@@ -141,19 +134,16 @@ export const VaulRoot = (_props: VaulRootProps) => {
         returnFocus,
 
         removeScrollProps,
+        scrollContainerProps,
 
         classNames,
         styles,
         unstyled,
         vars,
-        variant = 'default',
-        scrollContainerRef: scrollContainerRefProp
+        variant = 'default'
     } = props
 
     const id = useId(idProp)
-    const _scrollContainerRef = useRef<HTMLDivElement>(null)
-    const scrollContainerRef = useMergedRef(_scrollContainerRef, scrollContainerRefProp)
-
 
     const [value, onChange] = useUncontrolled<boolean>({
         value: opened,
@@ -169,8 +159,11 @@ export const VaulRoot = (_props: VaulRootProps) => {
         finalValue: 0,
     })
 
-    const [prevSnapPointIndex, setPrevSnapPointIndex] = useState<number>(0)
     const [viewportHeight, setViewportHeight] = useState<number>(0)
+
+    const { isMounted, isVisible, isAnimating } = usePresence(value, {
+        transitionDuration: 300
+    })
 
     const getStyles = useStyles<VaulRootFactory>({
         name: __staticSelector!,
@@ -183,34 +176,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
         varsResolver,
     })
 
-    useWindowEvent(
-        'keydown',
-        (event) => {
-            if (event.key === 'Escape' && closeOnEscape) {
-                if (openedVauls.has(id) && getSetValueByIndex(openedVauls, openedVauls.size - 1) === id) {
-                    const shouldTrigger = (event.target as HTMLElement)?.getAttribute('data-mantine-stop-propagation') !== 'true'
-                    if (!shouldTrigger) {
-                        return
-                    }
-                    onChange(false)
-                }
-            }
-        },
-        { capture: true }
-    )
-
     useFocusReturn({ opened: value, shouldReturnFocus: trapFocus && returnFocus })
-
-    useEffect(() => {
-        if (value) {
-            openedVauls.add(id)
-        } else {
-            openedVauls.delete(id)
-        }
-        return () => {
-            openedVauls.delete(id)
-        }
-    }, [value, id])
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -224,6 +190,19 @@ export const VaulRoot = (_props: VaulRootProps) => {
             }
         }
     }, [])
+
+    useEffect(() => {
+        if (document.getElementById(id) && isVisible) {
+            // Find all scrollable elements inside our drawer and assign a class to it so that we can disable overflow when dragging to prevent pointermove not being captured
+            const children = document.getElementById(id)?.querySelectorAll('*')
+            children?.forEach((child: Element) => {
+                const htmlChild = child as HTMLElement
+                if (htmlChild.scrollHeight > htmlChild.clientHeight || htmlChild.scrollWidth > htmlChild.clientWidth) {
+                    htmlChild.classList.add(classes.mantineVaulScrollable)
+                }
+            })
+        }
+    }, [id, isVisible])
 
     const parsedSnapPoints = useMemo<number[]>(() => {
         return snapPoints!.map((d) => {
@@ -246,110 +225,107 @@ export const VaulRoot = (_props: VaulRootProps) => {
     const currentSnapPoint = useMemo<number>(() => parsedSnapPoints[activeSnapPointIndex!], [activeSnapPointIndex, parsedSnapPoints])
     const largetsSnapPoint = useMemo<number>(() => parsedSnapPoints[parsedSnapPoints.length - 1], [parsedSnapPoints])
     const isLargestSnapPoint = useMemo<boolean>(() => activeSnapPointIndex === (parsedSnapPoints.length - 1), [activeSnapPointIndex, parsedSnapPoints.length])
-    const isSmallestSnapPoint = useMemo<boolean>(() => activeSnapPointIndex === 0, [activeSnapPointIndex])
-    const [transform, setTransform] = useState<number>(0)
-
-    const updateSnapPointIndex = useCallback((value: number) => {
-        setActiveSnapPointIndex!(value)
-        setPrevSnapPointIndex(activeSnapPointIndex!)
-    }, [activeSnapPointIndex])
 
     const handleDissmiss = useCallback(() => {
         if (dismissible) {
-            updateSnapPointIndex(0)
+            setActiveSnapPointIndex(0)
             onChange?.(false)
         }
-    }, [dismissible, updateSnapPointIndex])
+    }, [dismissible, onChange, setActiveSnapPointIndex])
 
-    const resultingTransform = useMemo(() => Math.max(
-        transform + (opened ? -currentSnapPoint : 0),
-        -largetsSnapPoint
-    ), [currentSnapPoint, largetsSnapPoint, opened, transform])
+    const shouldDrag = (target: HTMLElement) => {
+        let element = target as HTMLElement
+        const highlightedText = window.getSelection()?.toString()
 
+        if (element.hasAttribute('data-mantine-vaul-no-drag') || element.closest('[data-mantine-vaul-no-drag]')) {
+            return false
+        }
+        if (highlightedText && highlightedText.length > 0) {
+            return false
+        }
+        while (element) {
+            if (element.scrollHeight > element.clientHeight) {
+                if (element.scrollTop !== 0) {
+                    return false
+                }
+            }
+            element = element.parentNode as HTMLElement
+        }
+        return true
+    }
 
-    const handleGestureMove = useCallback((y: number, disableScrollCondition: boolean = false) => {
-        const scrollTop = _scrollContainerRef.current?.scrollTop
-
-        if (scrollTop && scrollTop > 0 && !disableScrollCondition) {
+    const handleGestureMove = useCallback(({ y, event, source }: { y: number, event: TouchEvent, source: 'content' | 'header', }) => {
+        if (!shouldDrag(event.target as HTMLElement) && source === 'content') {
             return
         }
-
+        setAttributeToElement(document.getElementById(id)!, 'data-animate', 'false')
         const delta = y
-        if (isLargestSnapPoint) {
-            setTransform(delta >= 0 ? delta : 0)
+        if (activeSnapPointIndex === (parsedSnapPoints.length - 1)) {
+            setVariableToElement(document.getElementById(id)!, '--vaul-transform', `${delta >= 0 ? delta : 0}px`)
         } else {
-            setTransform(delta)
+            setVariableToElement(document.getElementById(id)!, '--vaul-transform', `${delta}px`)
         }
-    }, [isLargestSnapPoint])
+    }, [activeSnapPointIndex, id, parsedSnapPoints.length])
 
     const handleGestureEnd = useCallback(() => {
+        const transform = parseInt(getComputedStyle(document.getElementById(id)!).getPropertyValue('--vaul-transform'))
         if (transform > expansionSwitchThreshold!) {
-            if (isSmallestSnapPoint) {
+            if (activeSnapPointIndex === 0) {
                 onClose?.(false)
             } else {
-                updateSnapPointIndex(activeSnapPointIndex! - 1)
-                _scrollContainerRef.current?.scrollTo(0, 0)
+                setActiveSnapPointIndex(activeSnapPointIndex! - 1)
             }
         } else if (transform < -expansionSwitchThreshold!) {
-            updateSnapPointIndex(activeSnapPointIndex! + 1)
+            setActiveSnapPointIndex(activeSnapPointIndex! + 1)
         }
-        setTransform(0)
-    }, [expansionSwitchThreshold, isSmallestSnapPoint, onClose, transform, updateSnapPointIndex])
+        setVariableToElement(document.getElementById(id)!, '--vaul-transform', `${0}px`)
+        setAttributeToElement(document.getElementById(id)!, 'data-animate', 'true')
+    }, [activeSnapPointIndex, expansionSwitchThreshold, id, onClose, setActiveSnapPointIndex])
 
     return (
         <VaulContextProvider
             value={{
-                opened: value,
-                onClose: onChange,
+                opened: isMounted,
                 activeSnapPointIndex,
-                snapPoints,
-                setActiveSnapPointIndex,
-                dismissible,
-                closeOnEscape,
-                closeOnOutsideClick,
+                closeOnOutsideClick: closeOnOutsideClick!,
                 getStyles,
                 variant,
                 unstyled,
-                id,
-                scrollAreaComponent,
-                trapFocus,
-                expansionSwitchThreshold,
-                prevSnapPointIndex,
-                updateSnapPointIndex,
+                trapFocus: trapFocus!,
                 handleDissmiss,
-                largestUndimmedSnapPointIndex,
-                scrollContainerRef,
-                scrollAreaComponentProps,
-                parsedSnapPoints,
-                currentSnapPoint,
-                largetsSnapPoint,
-                isLargestSnapPoint,
-                isSmallestSnapPoint,
-                transform,
-                setTransform,
-                viewportHeight,
+                largestSnapPointWithoutOverlayIndex: largestSnapPointWithoutOverlayIndex!,
                 handleGestureMove,
                 handleGestureEnd,
-                resultingTransform
+                scrollContainerProps,
+                closeOnEscape: closeOnEscape!
             }}
         >
             <Portal target={portalTarget}>
-                <RemoveScroll
-                    enabled={value}
-                    {...removeScrollProps}
-                >
-                    <Box
-                        {...getStyles('root')}
-                        id={id}
-                        variant={variant}
-                        mod={{ state: value ? 'opened' : 'closed' }}
-                        __vars={{
-                            '--vaul-largets-snap-point': `${largetsSnapPoint}px`,
-                        }}
+                {isMounted ? (
+                    <RemoveScroll
+                        enabled={value}
+                        {...removeScrollProps}
                     >
-                        {typeof children === 'function' ? children({ close: () => onChange(false), opened: value, scrollContainerRef: _scrollContainerRef }) : children}
-                    </Box>
-                </RemoveScroll>
+                        <Box
+                            {...getStyles('root')}
+                            id={id}
+                            variant={variant}
+                            mod={{
+                                part: 'root',
+                                state: value ? 'opened' : 'closed',
+                                animate: isAnimating,
+                                'no-scroll': !isLargestSnapPoint
+                            }}
+                            __vars={{
+                                '--vaul-height': `${largetsSnapPoint}px`,
+                                '--vaul-transform': `0px`,
+                                '--vaul-current-snap-point': `${isVisible ? currentSnapPoint : 0}px`
+                            }}
+                        >
+                            {typeof children === 'function' ? children({ close: () => onChange(false), opened: value }) : children}
+                        </Box>
+                    </RemoveScroll>
+                ) : null}
             </Portal>
         </VaulContextProvider>
     )
