@@ -1,7 +1,7 @@
 {
   "name": "mantine-vaul",
   "private": false,
-  "version": "0.1.5",
+  "version": "0.1.8",
   "description": "Mantine port of Vaul drawer component optimized for mobile devices.",
   "packageManager": "pnpm@8.4.0",
   "repository": {
@@ -34,16 +34,11 @@
     "build": "tsc && vite build --config vite-build.config.ts"
   },
   "dependencies": {
-    "@use-gesture/vanilla": "^10.3.1",
-    "@xstate/react": "^4.1.1",
-    "clsx": "^2.1.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-robot": "^0.3.0",
-    "robot3": "^0.4.1",
-    "xstate": "^5.12.0"
+    "clsx": "^2.1.0"
   },
   "devDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "@babel/core": "7.24.4",
     "@mantine/core": "^7.8.1",
     "@mantine/hooks": "^7.8.1",
@@ -71,8 +66,8 @@
     "vite-plugin-dts": "3.8.3"
   },
   "peerDependencies": {
-    "@mantine/core": "^7.8.0",
-    "@mantine/hooks": "^7.8.0",
+    "@mantine/core": "^7.8.1",
+    "@mantine/hooks": "^7.8.1",
     "@use-gesture/react": "^10.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"

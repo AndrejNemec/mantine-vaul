@@ -162,7 +162,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
     const [viewportHeight, setViewportHeight] = useState<number>(0)
 
     const { isMounted, isVisible, isAnimating } = usePresence(value, {
-        transitionDuration: 300
+        transitionDuration: 300,
     })
 
     const getStyles = useStyles<VaulRootFactory>({
@@ -271,16 +271,17 @@ export const VaulRoot = (_props: VaulRootProps) => {
         const transform = parseInt(getComputedStyle(document.getElementById(id)!).getPropertyValue('--vaul-transform'))
         if (transform > expansionSwitchThreshold!) {
             if (activeSnapPointIndex === 0) {
-                onClose?.(false)
+                onChange?.(false)
             } else {
                 setActiveSnapPointIndex(activeSnapPointIndex! - 1)
+                setVariableToElement(document.getElementById(id)!, '--vaul-transform', `${0}px`)
             }
         } else if (transform < -expansionSwitchThreshold!) {
             setActiveSnapPointIndex(activeSnapPointIndex! + 1)
+            setVariableToElement(document.getElementById(id)!, '--vaul-transform', `${0}px`)
         }
-        setVariableToElement(document.getElementById(id)!, '--vaul-transform', `${0}px`)
         setAttributeToElement(document.getElementById(id)!, 'data-animate', 'true')
-    }, [activeSnapPointIndex, expansionSwitchThreshold, id, onClose, setActiveSnapPointIndex])
+    }, [activeSnapPointIndex, expansionSwitchThreshold, id, onChange, setActiveSnapPointIndex])
 
     return (
         <VaulContextProvider
