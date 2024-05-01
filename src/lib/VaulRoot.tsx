@@ -14,7 +14,7 @@ import { VaulTitle } from './VaulTitle'
 import { VaulBody } from './VaulBody'
 import { VaulFooter } from './VaulFooter'
 import { setAttributeToElement, setVariableToElement } from './utils/styleHelpers'
-import { usePresence } from './hooks/usePresence'
+import { AnimatePresence } from './AnimatePresence'
 
 export type VaulRootStylesNames =
     | 'root'
@@ -62,7 +62,6 @@ export interface BaseVaulRootProps {
     trapFocus?: boolean
     returnFocus?: boolean
 
-    scrollContainerProps?: Record<string, any>
     removeScrollProps?: ComponentPropsWithRef<typeof RemoveScroll>
 }
 
@@ -134,7 +133,6 @@ export const VaulRoot = (_props: VaulRootProps) => {
         returnFocus,
 
         removeScrollProps,
-        scrollContainerProps,
 
         classNames,
         styles,
@@ -159,11 +157,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
         finalValue: 0,
     })
 
-    const [viewportHeight, setViewportHeight] = useState<number>(0)
-
-    const { isMounted, isVisible, isAnimating } = usePresence(value, {
-        transitionDuration: 300,
-    })
+    const [viewportHeight, setViewportHeight] = useState<number>(typeof window !== 'undefined' ? window.innerHeight : 0)
 
     const getStyles = useStyles<VaulRootFactory>({
         name: __staticSelector!,
@@ -192,7 +186,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
     }, [])
 
     useEffect(() => {
-        if (document.getElementById(id) && isVisible) {
+        if (document.getElementById(id) && opened) {
             // Find all scrollable elements inside our drawer and assign a class to it so that we can disable overflow when dragging to prevent pointermove not being captured
             const children = document.getElementById(id)?.querySelectorAll('*')
             children?.forEach((child: Element) => {
@@ -202,7 +196,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
                 }
             })
         }
-    }, [id, isVisible])
+    }, [id, opened])
 
     const parsedSnapPoints = useMemo<number[]>(() => {
         return snapPoints!.map((d) => {
@@ -240,9 +234,11 @@ export const VaulRoot = (_props: VaulRootProps) => {
         if (element.hasAttribute('data-mantine-vaul-no-drag') || element.closest('[data-mantine-vaul-no-drag]')) {
             return false
         }
+
         if (highlightedText && highlightedText.length > 0) {
             return false
         }
+
         while (element) {
             if (element.scrollHeight > element.clientHeight) {
                 if (element.scrollTop !== 0) {
@@ -286,7 +282,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
     return (
         <VaulContextProvider
             value={{
-                opened: isMounted,
+                opened: value,
                 activeSnapPointIndex,
                 closeOnOutsideClick: closeOnOutsideClick!,
                 getStyles,
@@ -297,36 +293,40 @@ export const VaulRoot = (_props: VaulRootProps) => {
                 largestSnapPointWithoutOverlayIndex: largestSnapPointWithoutOverlayIndex!,
                 handleGestureMove,
                 handleGestureEnd,
-                scrollContainerProps,
                 closeOnEscape: closeOnEscape!
             }}
         >
             <Portal target={portalTarget}>
-                {isMounted ? (
-                    <RemoveScroll
-                        enabled={value}
-                        {...removeScrollProps}
+                <RemoveScroll
+                    enabled={value}
+                    {...removeScrollProps}
+                >
+                    <AnimatePresence
+                        isVisible={value}
+                        transitionDuration={500}
                     >
-                        <Box
-                            {...getStyles('root')}
-                            id={id}
-                            variant={variant}
-                            mod={{
-                                part: 'root',
-                                state: value ? 'opened' : 'closed',
-                                animate: isAnimating,
-                                'no-scroll': !isLargestSnapPoint
-                            }}
-                            __vars={{
-                                '--vaul-height': `${largetsSnapPoint}px`,
-                                '--vaul-transform': `0px`,
-                                '--vaul-current-snap-point': `${isVisible ? currentSnapPoint : 0}px`
-                            }}
-                        >
-                            {typeof children === 'function' ? children({ close: () => onChange(false), opened: value }) : children}
-                        </Box>
-                    </RemoveScroll>
-                ) : null}
+                        {({ isAnimating, isVisible }) => (
+                            <Box
+                                {...getStyles('root')}
+                                id={id}
+                                variant={variant}
+                                mod={{
+                                    part: 'root',
+                                    state: value ? 'opened' : 'closed',
+                                    animate: isAnimating,
+                                    'no-scroll': !isLargestSnapPoint
+                                }}
+                                __vars={{
+                                    '--vaul-height': `${largetsSnapPoint}px`,
+                                    '--vaul-transform': `0px`,
+                                    '--vaul-current-snap-point': `${isVisible ? currentSnapPoint : 0}px`
+                                }}
+                            >
+                                {typeof children === 'function' ? children({ close: () => onChange(false), opened: value }) : children}
+                            </Box>
+                        )}
+                    </AnimatePresence>
+                </RemoveScroll>
             </Portal>
         </VaulContextProvider>
     )

@@ -41,10 +41,18 @@ export const App = () => {
                 >
                     <Box style={{ height: '100%' }}>
                         <Box maw='600px' mx='auto'>
+                        <TextInput data-autofocus type="text" />
+
                             <Button onClick={() => setOpenedAnotherModal(true)}>
                                 Test
                             </Button>
                             <Text>
+                                This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                                about why and how it was built{' '}
+                                This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                                about why and how it was built{' '}
+                                This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                                about why and how it was built{' '}
                                 This component can be used as a Dialog replacement on mobile and tablet devices. You can read
                                 about why and how it was built{' '}
                             </Text>
@@ -137,7 +145,6 @@ export const App = () => {
                                 about why and how it was built{' '}
                             </Text>
 
-                            <TextInput data-autofocus type="text" />
 
                             <Button onClick={() => setOpenedAnother(true)}>
                                 Open another vaul
@@ -151,6 +158,7 @@ export const App = () => {
                         title='Vaul 2'
                         opened={openedAnother}
                         onClose={setOpenedAnother}
+                        footer={<Button w='100%'>Hello world</Button>}
                     >
                         <Box maw='600px' mx='auto'>
                             <Text>

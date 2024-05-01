@@ -48,26 +48,14 @@
   border-top-right-radius: var(--vaul-radius);
   width: 100%;
   margin: 0 auto;
-  height: var(--vaul-height);
+  height: 100%;
+  max-height: var(--vaul-height);
   transform: translate3d(0, calc(100% + var(--vaul-resulting-transform)), 0);
   filter: drop-shadow(var(--vaul-shadow));
 
   [data-animate="true"] & {
-    transition-property: transform;
-    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transition-duration: 300ms;
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
   }
-}
-
-.inner {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow-y: auto;
-  margin-bottom: calc(var(--vaul-height) + var(--vaul-resulting-transform));
-  transition-property: margin;
-  transition-timing-function: cubic-bezier(0.25,0.46,0.45,0.94);
-  transition-duration: 300ms;
 }
 
 .overlay {
@@ -86,11 +74,6 @@
 }
 
 .header {
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--vaul-z-index);
   background-color: var(--mantine-color-body);
   touch-action: none;
   border-top-left-radius: var(--vaul-radius);
@@ -99,8 +82,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: var(--mantine-spacing-lg);
   width: 100%;
+  gap: var(--mantine-spacing-lg);
   padding: var(--mantine-spacing-xs) 0;
 }
 
@@ -116,15 +99,13 @@
 .body {
   padding: var(--mantine-spacing-xs);
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .footer {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--vaul-z-index);
   width: 100%;
+  margin-top: var(--mantine-spacing-xs);
   padding: var(--mantine-spacing-xs);
   background-color: var(--mantine-color-body);
   border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));

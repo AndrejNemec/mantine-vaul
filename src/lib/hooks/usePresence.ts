@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react'
 
-type SharedTransitionConfig = {
+export type SharedTransitionConfig = {
   transitionDuration: number
 }
 
-type SeparateTransitionConfig = {
+export type SeparateTransitionConfig = {
   enterTransitionDuration: number
   exitTransitionDuration: number
 }

@@ -10,7 +10,7 @@ export type VaulOverlayStylesNames = 'overlay'
 export interface VaulOverlayProps extends Omit<OverlayProps, 'styles' | 'classNames' | 'variant' | 'vars' | 'fixed'>,
     ElementProps<'div', 'color'>,
     CompoundStylesApiProps<VaulOverlayFactory> {
-        transitionProps?: TransitionOverride
+    transitionProps?: TransitionOverride
 }
 
 export type VaulOverlayFactory = Factory<{
@@ -41,16 +41,16 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
     const {
         activeSnapPointIndex,
         largestSnapPointWithoutOverlayIndex,
-        opened,
         closeOnOutsideClick,
         getStyles,
         variant,
         handleDissmiss,
-        unstyled
+        unstyled,
+        opened
     } = useVaulContext()
 
     const showOverlay = useMemo<boolean>(() => (activeSnapPointIndex! > largestSnapPointWithoutOverlayIndex!) && opened,
-     [activeSnapPointIndex, largestSnapPointWithoutOverlayIndex, opened])
+        [activeSnapPointIndex, largestSnapPointWithoutOverlayIndex, opened])
 
     const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
         if (closeOnOutsideClick) {
@@ -60,7 +60,7 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
     }
 
     return (
-        <Transition mounted={showOverlay} {...transitionProps} transition="fade">
+        <Transition mounted={showOverlay} {...transitionProps} transition="fade" duration={300}>
             {(transitionStyles) => (
                 <Overlay
                     unstyled={unstyledProp || unstyled}

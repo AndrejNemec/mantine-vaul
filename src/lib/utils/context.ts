@@ -14,7 +14,6 @@ export type DrawerContextValue = {
   closeOnOutsideClick: boolean
   closeOnEscape: boolean
   trapFocus: boolean
-  scrollContainerProps?: Record<string, any>
   handleDissmiss: () => void
   handleGestureMove: (event: { y: number, event: TouchEvent, source: 'content' | 'header', }) => void
   handleGestureEnd: () => void

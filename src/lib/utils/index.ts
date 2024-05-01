@@ -1,4 +1,6 @@
 export * from './context'
 export * from './types'
 export * from './throttle'
-export * from './intertialize'
+export * from './styleHelpers'
+export * from './parseSnapPoint'
+export * from './getSetValueByIndex'

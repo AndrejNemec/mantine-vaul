@@ -8,7 +8,6 @@ import { useId, useMergedRef } from '@mantine/hooks'
 import { useRef } from 'react'
 
 export interface VaulContentProps extends BoxProps, CompoundStylesApiProps<VaulContentFactory>, ElementProps<'div'> {
-    scrollContainerProps?: Record<string, any>
 }
 export type VaulContentStylesNames = 'content'
 
@@ -35,7 +34,6 @@ export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
         vars,
         id: idProp,
         mod,
-        scrollContainerProps: scrollContainerPropsProp,
         onKeyDown,
         ...rest
     } = useProps('VaulContent', defaultProps, _props)
@@ -49,12 +47,9 @@ export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
         variant,
         handleGestureEnd,
         handleGestureMove,
-        scrollContainerProps,
         closeOnEscape,
         handleDissmiss
     } = useVaulContext()
-
-    const scrollContainerMergedRefs = useMergedRef(scrollContainerPropsProp?.ref, scrollContainerProps?.ref)
 
     useDrag(({ down, movement: [, y], event }) => {
         event.stopPropagation()
@@ -94,9 +89,7 @@ export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
                     mod
                 ]}
             >
-                <Box {...scrollContainerPropsProp} {...getStyles('inner')} ref={scrollContainerMergedRefs}>
-                    {children}
-                </Box>
+                {children}
             </Box>
         </FocusTrap>
 
