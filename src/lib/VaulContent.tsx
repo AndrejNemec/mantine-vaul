@@ -1,11 +1,10 @@
 import type { BoxProps, CompoundStylesApiProps, ElementProps, ExtendComponent, Factory, MantineThemeComponent } from '@mantine/core'
 import { Box, FocusTrap, factory, useProps } from '@mantine/core'
-import type { VaulClasses } from './utils'
-import { useVaulContext } from './utils'
 import classes from './vaul.module.css'
-import { useDrag } from '@use-gesture/react'
-import { useId, useMergedRef } from '@mantine/hooks'
-import { useRef } from 'react'
+import { useId } from '@mantine/hooks'
+import { Drawer } from 'vaul'
+import { useVaulContext } from './context'
+import type { VaulClasses } from './types'
 
 export interface VaulContentProps extends BoxProps, CompoundStylesApiProps<VaulContentFactory>, ElementProps<'div'> {
 }
@@ -21,10 +20,7 @@ export type VaulContentFactory = Factory<{
 const defaultProps: VaulContentProps = {
 }
 
-export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
-    const ref = useRef<HTMLDivElement>(null)
-    const mergedRefs = useMergedRef(ref, refProp)
-
+export const VaulContent = factory<VaulContentFactory>((_props, ref) => {
     const {
         children,
         style,
@@ -42,57 +38,47 @@ export const VaulContent = factory<VaulContentFactory>((_props, refProp) => {
 
     const {
         opened,
+        setOpened,
         trapFocus,
         getStyles,
         variant,
-        handleGestureEnd,
-        handleGestureMove,
-        closeOnEscape,
-        handleDissmiss
+        closeOnEscape
     } = useVaulContext()
-
-    useDrag(({ down, movement: [, y], event }) => {
-        event.stopPropagation()
-        if (down) {
-            handleGestureMove({ y, event: event as TouchEvent, source: 'content' })
-            return
-        }
-        handleGestureEnd()
-    }, {
-        eventOptions: { passive: true },
-        target: ref
-    })
 
     return (
         <FocusTrap active={opened && trapFocus}>
-            <Box
-                ref={mergedRefs}
-                id={id}
-                role="dialog"
-                aria-modal
-                tabIndex={-1}
-                {...rest as any}
-                onKeyDown={(event) => {
-                    onKeyDown?.(event)
-                    if (event.key !== 'Escape') {
-                        return
-                    }
-                    if (closeOnEscape) {
-                        handleDissmiss()
-                    }
-                }}
-                {...getStyles('content', { className: classNameProp, classNames, styles, style, variant })}
-                mod={[
-                    {
-                        part: 'content'
-                    },
-                    mod
-                ]}
+            <Drawer.Content
+                asChild
+                onOpenAutoFocus={(event) => event.preventDefault()}
+                onCloseAutoFocus={(event) => event.preventDefault()}
+                onInteractOutside={(event) => event.preventDefault()}
+                onEscapeKeyDown={(event) => event.preventDefault()}
             >
-                {children}
-            </Box>
+                <Box
+                    ref={ref}
+                    id={id}
+                    role="dialog"
+                    aria-modal
+                    tabIndex={-1}
+                    {...rest as any}
+                    {...getStyles('content', { className: classNameProp, classNames, styles, style, variant })}
+                    mod={[
+                        {
+                            part: 'content'
+                        },
+                        mod
+                    ]}
+                    onKeyDown={(event) => {
+                        onKeyDown?.(event)
+                        if (event.key === 'Escape' && closeOnEscape) {
+                            setOpened(false)
+                        }
+                    }}
+                >
+                    {children}
+                </Box>
+            </Drawer.Content>
         </FocusTrap>
-
     )
 })
 

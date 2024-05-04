@@ -1,8 +1,9 @@
 import type { BoxProps, CompoundStylesApiProps, ElementProps, ExtendComponent, MantineThemeComponent, PolymorphicFactory } from '@mantine/core'
 import { Box, polymorphicFactory, useProps } from '@mantine/core'
-import type { VaulClasses } from './utils'
-import { useVaulContext } from './utils'
 import classes from './vaul.module.css'
+import { Drawer } from 'vaul'
+import { useVaulContext } from './context'
+import type { VaulClasses } from './types'
 
 export interface VaulTitleProps extends BoxProps, CompoundStylesApiProps<VaulTitleFactory>, ElementProps<'h2'> {
 }
@@ -39,13 +40,15 @@ export const VaulTitle = polymorphicFactory<VaulTitleFactory>((_props: VaulTitle
     } = useVaulContext()
 
     return (
-        <Box
-            ref={ref}
-            mod={[{ part: 'title' }, mod]}
-            component={component}
-            {...getStyles('title', { className, classNames, styles, style, variant })}
-            {...rest as any}
-        />
+        <Drawer.Title asChild>
+            <Box
+                ref={ref}
+                mod={[{ part: 'title' }, mod]}
+                component={component}
+                {...getStyles('title', { className, classNames, styles, style, variant })}
+                {...rest as any}
+            />
+        </Drawer.Title>
     )
 })
 

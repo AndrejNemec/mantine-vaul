@@ -4,6 +4,7 @@ export type VaulClasses = {
   handler: string
   header: string
   title: string
+  description: string
   body: string
   footer: string
 }

@@ -1,8 +1,8 @@
-.root {
+.content {
   --vaul-radius: var(--mantine-radius-default);
   --vaul-handler-radius: var(--mantine-radius-default);
-  --vaul-z-index: 200;
-  --vaul-overlay-z-index: var(--vaul-z-index);
+  --vaul-z-index: 199;
+  --vaul-max-height: 96%;
 
   --vaul-shadow-none: 0 0 0 rgb(0 0 0 / 0.0);
   --vaul-shadow-xs: 0 calc(0.5rem * var(--mantine-scale)) calc(0.5rem * var(--mantine-scale)) rgb(0 0 0 / 0.20);
@@ -13,58 +13,40 @@
 
   --vaul-shadow: var(--vaul-shadow-md);
 
-  position: fixed;
-  overflow: hidden;
-  overscroll-behavior: none;
-  pointer-events: none;
-  z-index: var(--vaul-z-index);
-
-  /* Runtime CSS Variables */
-  --vaul-height: 0;
-  --vaul-transform: 0;
-  --vaul-current-snap-point: 0;
-  --vaul-resulting-transform: max(calc(var(--vaul-transform) + calc(-1 * var(--vaul-current-snap-point))), calc(-1 * var(--vaul-height)));
-
-  &[data-no-scroll="true"] {
-    .mantine-vaul-scrollable {
-      touch-action: none;
-      overscroll-behavior: none;
-    }
-  }
-}
-
-.content {
   z-index: var(--vaul-z-index);
   pointer-events: auto;
   position: fixed;
-  touch-action: none;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: var(--mantine-color-body);
   display: flex;
   flex-direction: column;
-  border-top-left-radius: var(--vaul-radius);
-  border-top-right-radius: var(--vaul-radius);
   width: 100%;
   margin: 0 auto;
   height: 100%;
-  max-height: var(--vaul-height);
-  transform: translate3d(0, calc(100% + var(--vaul-resulting-transform)), 0);
+  max-height: var(--vaul-max-height);
   filter: drop-shadow(var(--vaul-shadow));
 
-  [data-animate="true"] & {
-    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  &[vaul-drawer-direction="bottom"] {
+    border-top-left-radius: var(--vaul-radius);
+    border-top-right-radius: var(--vaul-radius);
   }
 }
 
 .overlay {
+  --vaul-overlay-z-index: 199;
+
   z-index: var(--vaul-overlay-z-index);
   pointer-events: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .handler {
-  touch-action: none;
   border-radius: var(--vaul-handler-radius);
   width: rem(48px);
   height: rem(6px);
@@ -75,7 +57,6 @@
 
 .header {
   background-color: var(--mantine-color-body);
-  touch-action: none;
   border-top-left-radius: var(--vaul-radius);
   border-top-right-radius: var(--vaul-radius);
   display: flex;
@@ -96,6 +77,10 @@
   font-size: var(--mantine-font-size-md);
 }
 
+.description {
+  font-size: var(--mantine-font-size-sm);
+}
+
 .body {
   padding: var(--mantine-spacing-xs);
   width: 100%;
@@ -109,4 +94,8 @@
   padding: var(--mantine-spacing-xs);
   background-color: var(--mantine-color-body);
   border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.target {
+  
 }

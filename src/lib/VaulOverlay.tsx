@@ -1,9 +1,9 @@
-import { useMemo, type PointerEvent } from 'react'
-import { useVaulContext } from './utils/context'
+import { type PointerEvent } from 'react'
+import { useVaulContext } from './context'
 import type { CompoundStylesApiProps, ElementProps, ExtendComponent, Factory, MantineThemeComponent, OverlayProps, TransitionOverride } from '@mantine/core'
 import { Overlay, Transition, factory, useProps } from '@mantine/core'
 import classes from './vaul.module.css'
-import type { VaulClasses } from './utils'
+import type { VaulClasses } from './types'
 
 export type VaulOverlayStylesNames = 'overlay'
 
@@ -39,28 +39,28 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
     } = useProps('VaulContent', defaultProps, _props)
 
     const {
-        activeSnapPointIndex,
-        largestSnapPointWithoutOverlayIndex,
         closeOnOutsideClick,
         getStyles,
         variant,
-        handleDissmiss,
         unstyled,
-        opened
+        setOpened,
+        showOverlay
     } = useVaulContext()
-
-    const showOverlay = useMemo<boolean>(() => (activeSnapPointIndex! > largestSnapPointWithoutOverlayIndex!) && opened,
-        [activeSnapPointIndex, largestSnapPointWithoutOverlayIndex, opened])
 
     const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
         if (closeOnOutsideClick) {
-            handleDissmiss()
+            setOpened(false)
         }
         onPointerDownProp?.(event)
     }
 
     return (
-        <Transition mounted={showOverlay} {...transitionProps} transition="fade" duration={300}>
+        <Transition
+            transition="fade"
+            duration={300}
+            {...transitionProps}
+            mounted={showOverlay}
+        >
             {(transitionStyles) => (
                 <Overlay
                     unstyled={unstyledProp || unstyled}
