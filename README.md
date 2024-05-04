@@ -6,7 +6,7 @@
 
 ## install:
 
-`pnpm add mantine-vaul @mantine/core @mantine/hooks @use-gesture/react`
+`pnpm add mantine-vaul @mantine/core @mantine/hooks`
 
 ## Use the drawer in your app.
 
