@@ -184,7 +184,11 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
                         title={title}
                         footer={footer}
                         opened={opened}
-                        onOpenChange={onOpenChange}
+                        onOpenChange={(value) => {
+                            if (!value) {
+                                close()
+                            }
+                        }}
                         scrollAreaComponent={scrollAreaComponent}
                         removeScrollProps={removeScrollProps}
                         lockScroll={lockScroll}
