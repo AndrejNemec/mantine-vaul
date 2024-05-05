@@ -42,7 +42,7 @@ export interface ResponsiveDialogProps {
     vaulProps?: Omit<VaulProps, 'opened' | 'onOpenChange' | 'defaultOpened'>
 
     title?: ReactNode
-    children: ReactNode
+    children: ReactNode | ((props: { close: () => void, type: ResponsiveModalShowType, opened: boolean, }) => ReactNode)
     footer?: ReactNode
     footerProps?: Record<string, any>
 }
@@ -71,7 +71,7 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
         opened: openedProp,
         onClose: onCloseProp,
         title,
-        children,
+        children: childrenProp,
         footer,
         matches,
         drawerProps,
@@ -91,8 +91,7 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
         shadow,
         zIndex,
         radius,
-        footerProps,
-        ...props
+        footerProps
     } = useProps('ResponsiveDialog', defaultProps, _props)
 
     const type = useMatches<ResponsiveModalShowType>(matches!)
@@ -108,6 +107,8 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
     }, [onOpenChange])
 
     const hasHeader = !!title || withCloseButton
+
+    const children = typeof childrenProp === 'function' ? childrenProp({ close, type, opened }) : childrenProp
 
     const renderDialog = () => {
         switch (type) {
