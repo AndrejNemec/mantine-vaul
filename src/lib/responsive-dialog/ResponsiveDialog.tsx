@@ -37,9 +37,9 @@ export interface ResponsiveDialogProps {
 
     matches?: Partial<Record<MantineBreakpoint, ResponsiveModalShowType>>
 
-    modalProps?: Omit<ModalRootProps, 'opened' | 'onClose'>
-    drawerProps?: Omit<DrawerRootProps, 'opened' | 'onClose'>
-    vaulProps?: Omit<VaulProps, 'opened' | 'onOpenChange' | 'defaultOpened'>
+    modalProps?: Partial<Omit<ModalRootProps, 'opened' | 'onClose' | 'children'>>
+    drawerProps?: Partial<Omit<DrawerRootProps, 'opened' | 'onClose' | 'children'>>
+    vaulProps?: Partial<Omit<VaulProps, 'opened' | 'onOpenChange' | 'defaultOpened' | 'children'>>
 
     title?: ReactNode
     children: ReactNode | ((props: { close: () => void, type: ResponsiveModalShowType, opened: boolean, }) => ReactNode)
