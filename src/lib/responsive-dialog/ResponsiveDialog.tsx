@@ -48,7 +48,7 @@ export interface ResponsiveDialogProps {
 }
 
 export type ResponsiveDialogFactory = Factory<{
-    props: VaulProps
+    props: ResponsiveDialogProps
 }>
 
 const defaultProps: Partial<ResponsiveDialogProps> = {
