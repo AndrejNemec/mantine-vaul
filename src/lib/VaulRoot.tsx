@@ -15,8 +15,9 @@ import { Drawer } from 'vaul'
 import { VaulPortal } from './VaulPortal'
 import { VaulDescription } from './VaulDescription'
 import { VaulContextProvider } from './context'
-import type { VaulClasses } from './types'
+import type { ScrollAreaComponent, VaulClasses } from './types'
 import { VaulTarget } from './VaulTarget'
+import { VaulCloseTarget } from './VaulCloseTarget'
 
 export type VaulDirection = 'top' | 'bottom' | 'left' | 'right'
 
@@ -30,6 +31,7 @@ export type VaulStylesNames =
     | 'footer'
     | 'description'
     | 'target'
+    | 'closeTarget'
 
 export type VaulCssVariables = {
     content: '--vaul-radius' | '--vaul-z-index' | '--vaul-handler-radius'
@@ -57,7 +59,7 @@ export interface BaseVaulRootProps {
 
     portalTarget?: HTMLElement | null
 
-    closeOnOutsideClick?: boolean
+    closeOnClickOutside?: boolean
     closeOnEscape?: boolean
 
     radius?: MantineRadius
@@ -69,7 +71,9 @@ export interface BaseVaulRootProps {
 
     trapFocus?: boolean
     returnFocus?: boolean
+    lockScroll?: boolean
 
+    scrollAreaComponent?: ScrollAreaComponent
     removeScrollProps?: Omit<ComponentPropsWithRef<typeof RemoveScroll>, 'children'>
 }
 
@@ -94,6 +98,7 @@ export type VaulRootFactory = Factory<{
         Footer: typeof VaulFooter
         Handler: typeof VaulHandler
         Target: typeof VaulTarget
+        CloseTarget: typeof VaulTarget
     }
 }>
 
@@ -116,10 +121,11 @@ const varsResolver = createVarsResolver<VaulRootFactory>(
 const defaultProps: Omit<VaulRootProps, 'children'> = {
     __staticSelector: 'VaulRoot',
     closeOnEscape: true,
-    closeOnOutsideClick: true,
+    closeOnClickOutside: true,
     trapFocus: true,
     returnFocus: true,
-    dismissible: true
+    dismissible: true,
+    lockScroll: true
 }
 
 export const VaulRoot = (_props: VaulRootProps) => {
@@ -147,17 +153,19 @@ export const VaulRoot = (_props: VaulRootProps) => {
 
         portalTarget,
 
-        closeOnOutsideClick = true,
+        closeOnClickOutside = true,
         closeOnEscape = true,
 
         trapFocus = true,
         returnFocus = true,
+        lockScroll = true,
 
         removeScrollProps = {},
         classNames,
         styles,
         unstyled,
         vars,
+        scrollAreaComponent,
         variant = 'default'
     } = props
 
@@ -221,7 +229,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
             value={{
                 opened,
                 setOpened: onOpenChange,
-                closeOnOutsideClick,
+                closeOnClickOutside,
                 getStyles,
                 variant,
                 unstyled,
@@ -231,13 +239,14 @@ export const VaulRoot = (_props: VaulRootProps) => {
                 portalTarget,
                 isVisible,
                 showOverlay,
-                overlayRef
+                overlayRef,
+                scrollAreaComponent,
+                lockScroll
             }}
         >
             <Drawer.Root
                 open={opened}
                 onOpenChange={(value) => {
-                    console.log(value)
                     onOpenChange(value)
                     if (value) {
                         setIsVisible(true)
@@ -280,3 +289,4 @@ VaulRoot.Description = VaulDescription
 VaulRoot.Body = VaulBody
 VaulRoot.Footer = VaulFooter
 VaulRoot.Target = VaulTarget
+VaulRoot.CloseTarget = VaulCloseTarget

@@ -39,7 +39,7 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
     } = useProps('VaulContent', defaultProps, _props)
 
     const {
-        closeOnOutsideClick,
+        closeOnClickOutside,
         getStyles,
         variant,
         unstyled,
@@ -48,7 +48,7 @@ export const VaulOverlay = factory<VaulOverlayFactory>((_props, ref) => {
     } = useVaulContext()
 
     const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-        if (closeOnOutsideClick) {
+        if (closeOnClickOutside) {
             setOpened(false)
         }
         onPointerDownProp?.(event)

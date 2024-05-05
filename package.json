@@ -1,7 +1,7 @@
 {
   "name": "mantine-vaul",
   "private": false,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A drawer component library for mobile devices, leveraging the power of Vaul for seamless integration.",
   "packageManager": "pnpm@8.4.0",
   "repository": {
@@ -62,8 +62,8 @@
     "vite-plugin-dts": "3.9.0"
   },
   "peerDependencies": {
-    "@mantine/core": "^7",
-    "@mantine/hooks": "^7",
+    "@mantine/core": "^7.9.0",
+    "@mantine/hooks": "^7.9.0",
     "react": "^18",
     "react-dom": "^18"
   },

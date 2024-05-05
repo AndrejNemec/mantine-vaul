@@ -27,13 +27,14 @@ export const VaulPortal = (_props: VaulPortalProps) => {
     const {
         opened,
         portalTarget,
-        removeScrollProps
+        removeScrollProps,
+        lockScroll
     } = useVaulContext()
 
     return (
         <Drawer.Portal container={target || portalTarget}>
             <RemoveScroll
-                enabled={opened}
+                enabled={opened && lockScroll}
                 {...removeScrollProps}
                 {...removeScrollPropsProp as Record<string, any>}
             >

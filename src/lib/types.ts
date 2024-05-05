@@ -1,3 +1,5 @@
+import type { FC } from 'react'
+
 export type VaulClasses = {
   content: string
   overlay: string
@@ -7,4 +9,8 @@ export type VaulClasses = {
   description: string
   body: string
   footer: string
+  target: string
+  closeTarget: string
 }
+
+export type ScrollAreaComponent = FC<any>

@@ -13,14 +13,15 @@ import type { VaulContentProps } from './VaulContent'
 import { VaulContent } from './VaulContent'
 import type { VaulBodyProps } from './VaulBody'
 import { VaulBody } from './VaulBody'
-import type { ExtendComponent, Factory, MantineThemeComponent, StylesApiProps } from '@mantine/core'
-import { factory, useProps } from '@mantine/core'
+import type { CloseButtonProps, ExtendComponent, Factory, MantineThemeComponent, StylesApiProps } from '@mantine/core'
+import { CloseButton, factory, useProps } from '@mantine/core'
 import { VaulRoot } from './VaulRoot'
 import classes from './vaul.module.css'
 import { VaulPortal } from './VaulPortal'
 import { VaulDescription } from './VaulDescription'
 import type { VaulClasses } from './types'
 import { VaulTarget } from './VaulTarget'
+import { VaulCloseTarget } from './VaulCloseTarget'
 
 export interface VaulProps extends BaseVaulRootProps, StylesApiProps<VaulFactory> {
     __staticSelector?: string
@@ -37,6 +38,8 @@ export interface VaulProps extends BaseVaulRootProps, StylesApiProps<VaulFactory
     withHandler?: boolean
     handlerProps?: VaulHandlerProps
     bodyProps?: VaulBodyProps
+    withCloseButton?: boolean
+    closeButtonProps?: CloseButtonProps
 }
 
 export type VaulFactory = Factory<{
@@ -56,12 +59,14 @@ export type VaulFactory = Factory<{
         Footer: typeof VaulFooter
         Handler: typeof VaulHandler
         Target: typeof VaulTarget
+        CloseTarget: typeof VaulCloseTarget
     }
 }>
 
 const defaultProps: Partial<VaulProps> = {
     withOverlay: true,
-    withHandler: true
+    withHandler: true,
+    withCloseButton: true
 }
 
 export const Vaul = factory<VaulFactory>((_props, ref) => {
@@ -79,6 +84,8 @@ export const Vaul = factory<VaulFactory>((_props, ref) => {
         contentProps,
         bodyProps,
         target,
+        withCloseButton,
+        closeButtonProps,
         ...others
     } = useProps('Vaul', defaultProps, _props)
 
@@ -98,6 +105,15 @@ export const Vaul = factory<VaulFactory>((_props, ref) => {
                             <Vaul.Title {...titleProps}>
                                 {title}
                             </Vaul.Title>
+                        )}
+                        {withCloseButton && (
+                            <VaulCloseTarget
+                                component={CloseButton}
+                                pos='absolute'
+                                top={16}
+                                right={16}
+                                {...closeButtonProps as any}
+                            />
                         )}
                     </Vaul.Header>
                     <Vaul.Body {...bodyProps}>
@@ -130,3 +146,4 @@ Vaul.Description = VaulDescription
 Vaul.Body = VaulBody
 Vaul.Footer = VaulFooter
 Vaul.Target = VaulTarget
+Vaul.CloseTarget = VaulCloseTarget

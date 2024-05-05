@@ -1,20 +1,100 @@
-import { Box, Button, Modal, Text, TextInput } from '@mantine/core'
+import { Box, Button, Modal, ScrollArea, Text, TextInput } from '@mantine/core'
 import { useState } from 'react'
-import { Vaul } from '../lib'
+import { ResponsiveDialog, Vaul } from '../lib'
 
 export const App = () => {
     const [openedAnotherModal, setOpenedAnotherModal] = useState<boolean>(false)
     const [openedNextModal, setOpenedNextModal] = useState<boolean>(false)
+    const [openedResponsiveModal, setOpenedResponsiveModal] = useState<boolean>(false)
 
     return (
         <div>
             <Box>
+                <Button onClick={() => setOpenedResponsiveModal(true)}>
+                    Open responsive dialog
+                </Button>
+                <ResponsiveDialog
+                    title='Responsive dialog'
+                    opened={openedResponsiveModal}
+                    onClose={setOpenedResponsiveModal}
+                    scrollAreaComponent={ScrollArea.Autosize}
+                    footer={
+                        <Box>
+                            <Button>
+                                Hello world
+                            </Button>
+                        </Box>
+                    }
+                >
+                    <Box maw='600px' mx='auto'>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <TextInput data-autofocus type="text" />
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                        <Text>
+                            This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                            about why and how it was built{' '}
+                        </Text>
+                    </Box>
+                </ResponsiveDialog>
                 <Vaul
                     withOverlay={false}
                     variant='test'
                     title='Vaul'
                     radius='xl'
                     shadow='xl'
+                    scrollAreaComponent={ScrollArea.Autosize}
                     target={
                         <Vaul.Target component={Button}>
                             Open vaul
@@ -180,6 +260,13 @@ export const App = () => {
                         Open next modal
                     </Button>
                 </Modal>
+                <Box maw='600px' mx='auto' h='1200px'>
+                    <Text>
+                        This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                        about why and how it was built{' '}
+                    </Text>
+                    <TextInput data-autofocus type="text" />
+                </Box>
             </Box >
         </div >
     )
