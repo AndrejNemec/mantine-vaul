@@ -1,4 +1,4 @@
-import type { CloseButtonProps, DrawerRootProps, Factory, MantineBreakpoint, MantineRadius, MantineShadow, ModalBaseOverlayProps, ModalRootProps, RemoveScroll } from '@mantine/core'
+import type { CloseButtonProps, DrawerRootProps, ExtendComponent, Factory, MantineBreakpoint, MantineRadius, MantineShadow, MantineThemeComponent, ModalBaseOverlayProps, ModalRootProps, RemoveScroll } from '@mantine/core'
 import { Box, Drawer, Modal, createSafeContext, useMatches, useProps } from '@mantine/core'
 import { Vaul, type VaulProps } from '../Vaul'
 import { useCallback, type ComponentPropsWithRef, type ReactNode } from 'react'
@@ -214,6 +214,11 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
 
     )
 }
+
+const extendResponsiveDialog = (c: ExtendComponent<ResponsiveDialogFactory>): MantineThemeComponent => c
+
+ResponsiveDialog.displayName = 'mantine-vaul/ResponsiveDialog'
+ResponsiveDialog.extend = extendResponsiveDialog
 
 export {
     useResponsiveDialog,
