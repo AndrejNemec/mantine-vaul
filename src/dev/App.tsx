@@ -10,6 +10,34 @@ export const App = () => {
     return (
         <div>
             <Box>
+                <Text>
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                </Text>
+                <Text>
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                </Text>
+                <Text>
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                </Text>
+                <Text>
+                    This component can be used as a Dialog replacement on mobile and tablet devices. You can read
+                    about why and how it was built{' '}
+                </Text>
                 <Button onClick={() => setOpenedResponsiveModal(true)}>
                     Open responsive dialog
                 </Button>
@@ -17,7 +45,6 @@ export const App = () => {
                     title='Responsive dialog'
                     opened={openedResponsiveModal}
                     onClose={setOpenedResponsiveModal}
-                    scrollAreaComponent={ScrollArea.Autosize}
                     footer={
                         <Box>
                             <Button>

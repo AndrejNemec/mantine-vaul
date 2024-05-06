@@ -90,7 +90,6 @@
 
 .footer {
   width: 100%;
-  margin-top: var(--mantine-spacing-xs);
   padding: var(--mantine-spacing-xs);
   background-color: var(--mantine-color-body);
   border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
