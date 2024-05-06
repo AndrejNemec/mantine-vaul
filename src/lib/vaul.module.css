@@ -32,6 +32,12 @@
     border-top-left-radius: var(--vaul-radius);
     border-top-right-radius: var(--vaul-radius);
   }
+
+  &:focus, &:focus-visible {
+    outline: none;
+    outline-color: transparent;
+    outline-width: 0;
+  }
 }
 
 .overlay {
