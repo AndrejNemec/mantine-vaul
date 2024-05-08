@@ -265,6 +265,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
                 closeThreshold={closeThreshold}
                 dismissible={dismissible}
                 preventScrollRestoration={false}
+                disablePreventScroll={true}
                 shouldScaleBackground={false}
                 modal={false}
             >
