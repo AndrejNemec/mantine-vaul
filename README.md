@@ -1,8 +1,10 @@
-# mantine-vaul ([Live example](https://mantine-vaul.vercel.app/))
+# mantine-vaul
 
 **A drawer component library for mobile devices, leveraging the power of Vaul for seamless integration.**
 
 **Library works only with mantine v7.9.0+**
+
+([Live example](https://mantine-vaul.vercel.app/))
 
 ## install:
 

@@ -1,4 +1,4 @@
-import { Anchor, Box, Button, CopyButton, Group, Modal, ScrollArea, Stack, Text, TextInput, Title } from '@mantine/core'
+import { Anchor, Box, Button, CopyButton, Group, Modal, ScrollArea, Stack, Text, TextInput, Title, Tooltip } from '@mantine/core'
 import { useState } from 'react'
 import { ResponsiveDialog, Vaul } from '../lib'
 import { CodeHighlight } from '@mantine/code-highlight'
@@ -205,18 +205,23 @@ export const App = () => {
                 </Modal>
 
                 <Text>
-                    This component can be used as a Dialog replacement on mobile and tablet devices.
+                    A drawer component library for mobile devices, leveraging the power of Vaul for seamless integration.
                 </Text>
                 <Text fw={500}>
                     Install:
                     <CopyButton value='pnpm install mantine-vaul'>
                         {({ copy, copied }) => (
-                            <Text style={{ cursor: 'pointer' }} onClick={copy} ml='4px' fw={400} span c={copied ? 'blue' : 'gray'}>
-                                pnpm install mantine-vaul
-                                (click to copy)
-                            </Text>
+                            <Tooltip label='Copied' opened={copied}>
+                                <Text style={{ cursor: 'pointer' }} onClick={copy} ml='4px' fw={400} span c={copied ? 'blue' : 'gray.7'}>
+                                    pnpm install mantine-vaul
+                                    (click to copy)
+                                </Text>
+                            </Tooltip>
                         )}
                     </CopyButton>
+                </Text>
+                <Text fw={500} fz='xl'>
+                    Library works only with mantine v7.9.0+
                 </Text>
                 <Group>
                     <Anchor href='https://github.com/AndrejNemec/mantine-vaul/tree/main' target='_blank' rel='noopener'>
