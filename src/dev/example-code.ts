@@ -10,7 +10,7 @@ const resposiveDialogMatches = {
 };
 
 export const App = () => {
-  const [open, setOpen] = useState < boolean > false;
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
     <div>

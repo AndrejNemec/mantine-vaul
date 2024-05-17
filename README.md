@@ -14,7 +14,7 @@
 
 **Only Vaul:**
 
-```jsx
+```tsx
 import "mantine-vaul/style.css";
 import { Box, Button, Text } from "@mantine/core";
 import { Vaul } from "mantine-vaul";
@@ -42,7 +42,7 @@ export const App = () => {
 
 **Responsive dialog:** (Show vaul, classic drawer or classic dialog by responsive breakpoint)
 
-```jsx
+```tsx
 import "mantine-vaul/style.css";
 import { Box, Button, Text } from "@mantine/core";
 import { ResponsiveDialog } from "mantine-vaul";
@@ -54,7 +54,7 @@ const resposiveDialogMatches = {
 };
 
 export const App = () => {
-  const [open, setOpen] = useState < boolean > false;
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
     <div>
