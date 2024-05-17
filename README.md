@@ -4,11 +4,15 @@
 
 **Library works only with mantine v7.9.0+**
 
+**Example: **
+
 ## install:
 
 `pnpm add mantine-vaul @mantine/core @mantine/hooks`
 
 ## Use the drawer in your app.
+
+**Only Vaul:**
 
 ```jsx
 import "mantine-vaul/style.css";
@@ -36,7 +40,7 @@ export const App = () => {
 };
 ```
 
-## Use the responsive dialog in your app.
+**Responsive dialog:** (Show vaul, classic drawer or classic dialog by responsive breakpoint)
 
 ```jsx
 import "mantine-vaul/style.css";
@@ -44,13 +48,13 @@ import { Box, Button, Text } from "@mantine/core";
 import { ResponsiveDialog } from "mantine-vaul";
 
 const resposiveDialogMatches = {
-        base: 'vaul',
-        lg: 'modal',
-        xl: 'drawer'
-}
+  base: "vaul",
+  lg: "modal",
+  xl: "drawer",
+};
 
 export const App = () => {
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState < boolean > false;
 
   return (
     <div>

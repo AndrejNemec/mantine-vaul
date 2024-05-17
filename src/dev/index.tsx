@@ -2,6 +2,7 @@ import './style.css'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import '@mantine/core/styles.css'
+import '@mantine/code-highlight/styles.css'
 import { MantineProvider } from '@mantine/core'
 import { App } from './App'
 import { VaulContent } from '../lib'
@@ -15,7 +16,7 @@ root.render(
                 scale: 1,
                 components: {
                     VaulContent: VaulContent.extend({
-                        
+
                     })
                 },
                 defaultRadius: 'xl',

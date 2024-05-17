@@ -31,9 +31,11 @@
   },
   "scripts": {
     "dev": "vite --config vite-dev.config.ts",
-    "build": "tsc && vite build --config vite-build.config.ts"
+    "build": "tsc && vite build --config vite-build.config.ts",
+    "build:example": "tsc && vite build --config vite-dev.config.ts"
   },
   "dependencies": {
+    "@mantine/code-highlight": "^7.9.2",
     "vaul": "^0.9.1"
   },
   "devDependencies": {
