@@ -1,7 +1,7 @@
 {
   "name": "mantine-vaul",
   "private": false,
-  "version": "0.4.9",
+  "version": "0.5.0",
   "description": "A drawer component library for mobile devices, leveraging the power of Vaul for seamless integration.",
   "packageManager": "pnpm@8.4.0",
   "repository": {
@@ -18,39 +18,46 @@
   ],
   "author": "Andrej Nemec",
   "license": "MIT",
-  "main": "./dist/mantine-vaul.umd.js",
-  "module": "./dist/mantine-vaul.es.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/mantine-vaul.es.js",
-      "require": "./dist/mantine-vaul.umd.js"
-    },
+  "files": ["dist", "LICENSE"],
+	"types": "dist/esm/index.d.ts",
+	"main": "dist/cjs/index.cjs",
+	"module": "dist/esm/index.js",
+	"exports": {
+		".": {
+			"import": {
+				"types": "./dist/esm/index.d.ts",
+				"default": "./dist/esm/index.js"
+			},
+			"require": {
+				"types": "./dist/cjs/index.d.cts",
+				"default": "./dist/cjs/index.cjs"
+			}
+		},
+		"./package.json": "./package.json",
     "./style.css": "./dist/style.css"
-  },
+	},
   "scripts": {
     "dev": "vite --config vite-dev.config.ts",
     "build": "tsc && vite build --config vite-build.config.ts",
     "build:example": "tsc && vite build --config vite-dev.config.ts"
   },
   "dependencies": {
-    "@mantine/code-highlight": "^7.9.2",
-    "vaul": "^0.9.1"
+    "vaul": "^0.9.1",
+    "@mantine/code-highlight": "^7.9.2"
   },
   "devDependencies": {
     "@babel/core": "7.24.5",
-    "@mantine/core": "^7.9.0",
-    "@mantine/hooks": "^7.9.0",
-    "@types/node": "20.12.8",
-    "@types/react": "18.3.1",
+    "@mantine/core": "^7.9.2",
+    "@mantine/hooks": "^7.9.2",
+    "@types/node": "20.12.12",
+    "@types/react": "18.3.2",
     "@types/react-dom": "18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
-    "@vitejs/plugin-react": "4.2.1",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "@vitejs/plugin-react": "4.3.0",
     "autoprefixer": "10.4.19",
     "babel-loader": "9.1.3",
-    "eslint": "^8.56.0",
+    "eslint": "^9.3.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-unused-imports": "^3.2.0",
@@ -59,9 +66,12 @@
     "postcss-simple-vars": "^7.0.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "rollup-plugin-preserve-directives": "^0.4.0",
     "typescript": "5.4.5",
     "vite": "5.2.11",
-    "vite-plugin-dts": "3.9.0"
+    "vite-plugin-dts": "3.9.1",
+    "vite-plugin-externalize-deps": "^0.8.0",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "peerDependencies": {
     "@mantine/core": "^7.9.0",
@@ -69,7 +79,7 @@
     "react": "^18",
     "react-dom": "^18"
   },
-  "files": [
-    "dist"
-  ]
+  "resolutions": {
+    "eslint": "8.56.0"
+  }
 }

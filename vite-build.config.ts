@@ -1,20 +1,45 @@
 import react from '@vitejs/plugin-react'
-import path from 'node:path'
 import dts from 'vite-plugin-dts'
-import type { UserConfigExport} from 'vite'
+import type { UserConfigExport } from 'vite'
 import { defineConfig } from 'vite'
-import { name } from './package.json'
 import postCSSPresetMantine from 'postcss-preset-mantine'
 import postCSSSimpleVars from 'postcss-simple-vars'
+import { externalizeDeps } from 'vite-plugin-externalize-deps'
+import { preserveDirectives } from 'rollup-plugin-preserve-directives'
+import tsconfigPaths from 'vite-tsconfig-paths'
+
+const buildOutputDir = 'dist'
+const rootDir = './src/lib'
+const entryFile = `${rootDir}/index.ts`
 
 const app = async (): Promise<UserConfigExport> => {
-  const formattedName = name.match(/[^/]+$/)?.[0] ?? name
-
   return defineConfig({
     plugins: [
       react(),
+      externalizeDeps({
+        include: [],
+      }),
+      preserveDirectives(),
+      tsconfigPaths(),
       dts({
-        insertTypesEntry: true,
+        outDir: `${buildOutputDir}/esm`,
+        entryRoot: rootDir,
+        include: rootDir,
+        compilerOptions: {
+          // @ts-expect-error
+          module: 'esnext',
+          declarationMap: false,
+        },
+      }),
+      dts({
+        outDir: `${buildOutputDir}/cjs`,
+        entryRoot: rootDir,
+        include: rootDir,
+        compilerOptions: {
+          // @ts-expect-error
+          module: 'commonjs',
+          declarationMap: false,
+        },
       }),
     ],
     css: {
@@ -37,22 +62,22 @@ const app = async (): Promise<UserConfigExport> => {
       }
     },
     build: {
+      outDir: buildOutputDir,
+      minify: true,
+      sourcemap: true,
       lib: {
-        entry: path.resolve(__dirname, 'src/lib/index.ts'),
-        name: formattedName,
-        formats: ['es', 'umd'],
-        fileName: (format) => `${formattedName}.${format}.js`,
-      },
-      rollupOptions: {
-        external: ['react', 'react/jsx-runtime', 'react-dom', '@mantine/core', '@mantine/hooks'],
-        output: {
-          globals: {
-            react: 'React',
-            'react/jsx-runtime': 'react/jsx-runtime',
-            'react-dom': 'ReactDOM'
-          },
+        entry: entryFile,
+        formats: ['es', 'cjs'],
+        fileName: (format) => {
+          if (format === 'cjs') return 'cjs/[name].cjs'
+          return 'esm/[name].js'
         },
       },
+      rollupOptions: {
+        output: {
+          preserveModules: true,
+        },
+      }
     }
   })
 }
