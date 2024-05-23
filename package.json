@@ -1,7 +1,7 @@
 {
   "name": "mantine-vaul",
   "private": false,
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A drawer component library for mobile devices, leveraging the power of Vaul for seamless integration.",
   "packageManager": "pnpm@8.4.0",
   "repository": {
@@ -43,12 +43,12 @@
   },
   "dependencies": {
     "vaul": "^0.9.1",
-    "@mantine/code-highlight": "^7.9.2"
+    "@mantine/code-highlight": "^7.10.0"
   },
   "devDependencies": {
     "@babel/core": "7.24.5",
-    "@mantine/core": "^7.9.2",
-    "@mantine/hooks": "^7.9.2",
+    "@mantine/core": "^7.10.0",
+    "@mantine/hooks": "^7.10.0",
     "@types/node": "20.12.12",
     "@types/react": "18.3.2",
     "@types/react-dom": "18.3.0",
@@ -74,12 +74,14 @@
     "vite-tsconfig-paths": "^4.3.2"
   },
   "peerDependencies": {
-    "@mantine/core": "^7.9.0",
-    "@mantine/hooks": "^7.9.0",
-    "react": "^18",
-    "react-dom": "^18"
+    "@mantine/core": ">=7.9.0",
+    "@mantine/hooks": ">=7.9.0",
+    "react": ">=18.0.0 < 19",
+    "react-dom": ">=18.0.0 < 19"
   },
   "resolutions": {
-    "eslint": "8.56.0"
+    "eslint": "8.56.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   }
 }
