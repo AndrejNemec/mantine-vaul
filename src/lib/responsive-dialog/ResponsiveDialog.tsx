@@ -18,6 +18,7 @@ const [ResponsiveDialogProvider, useResponsiveDialog] = createSafeContext<Respon
 export interface ResponsiveDialogProps {
     opened: boolean
     onClose: (value: boolean) => void
+    onCloseAnimationEnd?: () => void
 
     trapFocus?: boolean
     returnFocus?: boolean
@@ -70,6 +71,7 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
     const {
         opened: openedProp,
         onClose: onCloseProp,
+        onCloseAnimationEnd,
         title,
         children: childrenProp,
         footer,
@@ -127,6 +129,13 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
                         trapFocus={trapFocus}
                         returnFocus={returnFocus}
                         {...modalProps}
+                        transitionProps={{
+                            ...modalProps?.transitionProps,
+                            onExited: () => {
+                                onCloseAnimationEnd?.()
+                                modalProps?.transitionProps?.onExited?.()
+                            }
+                        }}
                     >
                         {withOverlay && <Modal.Overlay {...overlayProps} />}
                         <Modal.Content radius={radius}>
@@ -160,6 +169,13 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
                         trapFocus={trapFocus}
                         returnFocus={returnFocus}
                         {...drawerProps}
+                        transitionProps={{
+                            ...drawerProps?.transitionProps,
+                            onExited: () => {
+                                onCloseAnimationEnd?.()
+                                drawerProps?.transitionProps?.onExited?.()
+                            }
+                        }}
                     >
                         {withOverlay && <Drawer.Overlay {...overlayProps} />}
                         <Drawer.Content>
@@ -204,6 +220,10 @@ const ResponsiveDialog = (_props: ResponsiveDialogProps) => {
                         trapFocus={trapFocus}
                         returnFocus={returnFocus}
                         {...vaulProps}
+                        onCloseAnimationEnd={() => {
+                            onCloseAnimationEnd?.()
+                            vaulProps?.onCloseAnimationEnd?.()
+                        }}
                     >
                         {children}
                     </Vaul>
