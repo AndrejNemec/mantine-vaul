@@ -1,11 +1,11 @@
 import react from '@vitejs/plugin-react'
-import dts from 'vite-plugin-dts'
-import type { UserConfigExport } from 'vite'
-import { defineConfig } from 'vite'
 import postCSSPresetMantine from 'postcss-preset-mantine'
 import postCSSSimpleVars from 'postcss-simple-vars'
-import { externalizeDeps } from 'vite-plugin-externalize-deps'
 import { preserveDirectives } from 'rollup-plugin-preserve-directives'
+import type { UserConfigExport } from 'vite'
+import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
+import { externalizeDeps } from 'vite-plugin-externalize-deps'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const buildOutputDir = 'dist'
@@ -26,8 +26,7 @@ const app = async (): Promise<UserConfigExport> => {
         entryRoot: rootDir,
         include: rootDir,
         compilerOptions: {
-          // @ts-expect-error
-          module: 'esnext',
+          module: 99,
           declarationMap: false,
         },
       }),
@@ -36,8 +35,7 @@ const app = async (): Promise<UserConfigExport> => {
         entryRoot: rootDir,
         include: rootDir,
         compilerOptions: {
-          // @ts-expect-error
-          module: 'commonjs',
+          module: 1,
           declarationMap: false,
         },
       }),
@@ -76,6 +74,7 @@ const app = async (): Promise<UserConfigExport> => {
       rollupOptions: {
         output: {
           preserveModules: true,
+          exports: 'named',
         },
       }
     }

@@ -1,10 +1,10 @@
 import type { BoxProps, CompoundStylesApiProps, ElementProps, ExtendComponent, Factory, MantineThemeComponent } from '@mantine/core'
 import { Box, FocusTrap, factory, useProps } from '@mantine/core'
-import classes from './vaul.module.css'
 import { useId } from '@mantine/hooks'
 import { Drawer } from 'vaul'
 import { useVaulContext } from './context'
 import type { VaulClasses } from './types'
+import classes from './vaul.module.css'
 
 export interface VaulContentProps extends BoxProps, CompoundStylesApiProps<VaulContentFactory>, ElementProps<'div'> {
 }
