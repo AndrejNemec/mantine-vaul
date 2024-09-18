@@ -1,8 +1,8 @@
-import type { GetStylesApi} from '@mantine/core'
+import type { GetStylesApi } from '@mantine/core'
 import { createSafeContext } from '@mantine/core'
-import type { VaulRootFactory } from './VaulRoot'
 import type { RefObject } from 'react'
 import type { ScrollAreaComponent } from './types'
+import type { VaulRootFactory } from './VaulRoot'
 
 export type DrawerContextValue = {
   getStyles: GetStylesApi<VaulRootFactory>
@@ -22,9 +22,8 @@ export type DrawerContextValue = {
   lockScroll: boolean
 }
 
-const [VaulContextProvider, useVaulContext] = createSafeContext<DrawerContextValue>('[mantine-vaul] VaulContext was not found, make sure you are using Mantine Vaul components inside <VaulRoot/>.')
+const [VaulContextProvider, useVaulContext] = createSafeContext<DrawerContextValue>(
+  '[mantine-vaul] VaulContext was not found, make sure you are using Mantine Vaul components inside <VaulRoot/>.'
+)
 
-export {
-  VaulContextProvider,
-  useVaulContext,
-}
+export { useVaulContext, VaulContextProvider }

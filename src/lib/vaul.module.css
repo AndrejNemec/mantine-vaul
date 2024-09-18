@@ -4,8 +4,8 @@
   --vaul-z-index: 199;
   --vaul-max-height: 96%;
 
-  --vaul-shadow-none: 0 0 0 rgb(0 0 0 / 0.0);
-  --vaul-shadow-xs: 0 calc(0.5rem * var(--mantine-scale)) calc(0.5rem * var(--mantine-scale)) rgb(0 0 0 / 0.20);
+  --vaul-shadow-none: 0 0 0 rgb(0 0 0 / 0);
+  --vaul-shadow-xs: 0 calc(0.5rem * var(--mantine-scale)) calc(0.5rem * var(--mantine-scale)) rgb(0 0 0 / 0.2);
   --vaul-shadow-sm: 0 calc(1rem * var(--mantine-scale)) calc(1rem * var(--mantine-scale)) rgb(0 0 0 / 0.28);
   --vaul-shadow-md: 0 calc(1.5rem * var(--mantine-scale)) calc(1.5rem * var(--mantine-scale)) rgb(0 0 0 / 0.36);
   --vaul-shadow-lg: 0 calc(2rem * var(--mantine-scale)) calc(2rem * var(--mantine-scale)) rgb(0 0 0 / 0.48);
@@ -28,12 +28,13 @@
   max-height: var(--vaul-max-height);
   filter: drop-shadow(var(--vaul-shadow));
 
-  &[vaul-drawer-direction="bottom"] {
+  &[data-vaul-drawer-direction='bottom'] {
     border-top-left-radius: var(--vaul-radius);
     border-top-right-radius: var(--vaul-radius);
   }
 
-  &:focus, &:focus-visible {
+  &:focus,
+  &:focus-visible {
     outline: none;
     outline-color: transparent;
     outline-width: 0;
@@ -102,9 +103,7 @@
 }
 
 .target {
-  
 }
 
 .closeTarget {
-
 }

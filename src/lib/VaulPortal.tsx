@@ -1,47 +1,26 @@
 import type { ExtendComponent, Factory, MantineThemeComponent } from '@mantine/core'
-import { RemoveScroll, useProps } from '@mantine/core'
+import { useProps } from '@mantine/core'
+import type { ReactNode } from 'react'
 import { Drawer } from 'vaul'
-import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { useVaulContext } from './context'
 
 export interface VaulPortalProps {
-    target?: HTMLElement | null
-    removeScrollProps?: Omit<ComponentPropsWithRef<typeof RemoveScroll>, 'children'>
-    children: ReactNode
+  target?: HTMLElement | null
+  children: ReactNode
 }
 
 export type VaulPortalFactory = Factory<{
-    props: VaulPortalProps
+  props: VaulPortalProps
 }>
 
-const defaultProps: Partial<VaulPortalProps> = {
-}
+const defaultProps: Partial<VaulPortalProps> = {}
 
 export const VaulPortal = (_props: VaulPortalProps) => {
-    const {
-        children,
-        target,
-        removeScrollProps: removeScrollPropsProp
-    } = useProps('VaulPortal', defaultProps, _props)
+  const { children, target } = useProps('VaulPortal', defaultProps, _props)
 
-    const {
-        opened,
-        portalTarget,
-        removeScrollProps,
-        lockScroll
-    } = useVaulContext()
+  const { portalTarget } = useVaulContext()
 
-    return (
-        <Drawer.Portal container={target || portalTarget}>
-            <RemoveScroll
-                enabled={opened && lockScroll}
-                {...removeScrollProps}
-                {...removeScrollPropsProp as Record<string, any>}
-            >
-                {children}
-            </RemoveScroll>
-        </Drawer.Portal>
-    )
+  return <Drawer.Portal container={target || portalTarget}>{children}</Drawer.Portal>
 }
 
 const extendVaulContent = (c: ExtendComponent<VaulPortalFactory>): MantineThemeComponent => c
