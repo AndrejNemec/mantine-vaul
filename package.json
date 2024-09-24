@@ -1,9 +1,9 @@
 {
   "name": "mantine-vaul",
   "private": false,
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "A drawer component library for mobile devices, leveraging the power of Vaul for seamless integration.",
-  "packageManager": "pnpm@9.10.0",
+  "packageManager": "pnpm@9.11.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/AndrejNemec/mantine-vaul"
@@ -46,23 +46,23 @@
     "build:example": "tsc && vite build --config vite-dev.config.ts"
   },
   "dependencies": {
-    "vaul": "^0.9.4"
+    "vaul": "^0.9.6"
   },
   "devDependencies": {
     "@babel/core": "7.25.2",
-    "@eslint/js": "^9.10.0",
+    "@eslint/js": "^9.11.1",
     "@mantine/code-highlight": "^7.12.2",
     "@mantine/core": "^7.12.2",
     "@mantine/hooks": "^7.12.2",
-    "@types/node": "22.5.5",
-    "@types/react": "18.3.7",
+    "@types/node": "22.6.1",
+    "@types/react": "18.3.9",
     "@types/react-dom": "18.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.6.0",
-    "@typescript-eslint/parser": "^8.6.0",
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0",
     "@vitejs/plugin-react": "4.3.1",
     "autoprefixer": "10.4.20",
     "babel-loader": "9.2.1",
-    "eslint": "^9.10.0",
+    "eslint": "^9.11.1",
     "eslint-plugin-react": "^7.36.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-unused-imports": "^4.1.4",
@@ -75,8 +75,8 @@
     "react-dom": "18.3.1",
     "rollup-plugin-preserve-directives": "^0.4.0",
     "typescript": "5.6.2",
-    "vite": "5.4.6",
-    "vite-plugin-dts": "4.2.1",
+    "vite": "5.4.7",
+    "vite-plugin-dts": "4.2.2",
     "vite-plugin-externalize-deps": "^0.8.0",
     "vite-tsconfig-paths": "^5.0.1"
   },

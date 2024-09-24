@@ -7,6 +7,8 @@ import type {
   PolymorphicFactory
 } from '@mantine/core'
 import { Box, polymorphicFactory, useProps } from '@mantine/core'
+import { useId } from '@mantine/hooks'
+import { useEffect } from 'react'
 import { Drawer } from 'vaul'
 import { useVaulContext } from './context'
 import type { VaulClasses } from './types'
@@ -40,10 +42,16 @@ export const VaulDescription = polymorphicFactory<VaulDescriptionFactory>(
       component = 'p',
       vars,
       mod,
+      id: idProp,
       ...rest
     } = useProps('VaulDescription', defaultProps, _props)
 
-    const { getStyles, variant } = useVaulContext()
+    const { getStyles, variant, setDescriptionId } = useVaulContext()
+    const id = useId(idProp)
+
+    useEffect(() => {
+      setDescriptionId(id)
+    }, [id])
 
     return (
       <Drawer.Description asChild>
@@ -53,6 +61,7 @@ export const VaulDescription = polymorphicFactory<VaulDescriptionFactory>(
           component={component}
           {...getStyles('description', { className, classNames, styles, style, variant })}
           {...(rest as any)}
+          id={id}
         />
       </Drawer.Description>
     )

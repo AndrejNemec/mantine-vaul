@@ -20,6 +20,8 @@ export type DrawerContextValue = {
   showOverlay: boolean
   overlayRef: RefObject<HTMLDivElement | null>
   lockScroll: boolean
+  descriptionId: string
+  setDescriptionId: (id: string) => void
 }
 
 const [VaulContextProvider, useVaulContext] = createSafeContext<DrawerContextValue>(

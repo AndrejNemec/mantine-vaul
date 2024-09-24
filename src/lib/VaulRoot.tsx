@@ -8,9 +8,9 @@ import type {
   StylesApiProps
 } from '@mantine/core'
 import { createVarsResolver, getRadius, getSize, useProps, useStyles } from '@mantine/core'
-import { useFocusReturn, useUncontrolled } from '@mantine/hooks'
+import { useFocusReturn, useIsomorphicEffect, useUncontrolled } from '@mantine/hooks'
 import type { ComponentPropsWithRef } from 'react'
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useMemo, useRef, useState, type ReactNode } from 'react'
 import { Drawer } from 'vaul'
 import { VaulContextProvider } from './context'
 import type { ScrollAreaComponent, VaulClasses } from './types'
@@ -133,8 +133,7 @@ const defaultProps: Omit<VaulRootProps, 'children'> = {
   trapFocus: true,
   returnFocus: true,
   dismissible: true,
-  lockScroll: true,
-  snapPoints: [1]
+  lockScroll: true
 }
 
 export const VaulRoot = (_props: VaulRootProps) => {
@@ -193,16 +192,7 @@ export const VaulRoot = (_props: VaulRootProps) => {
   })
 
   const [isVisible, setIsVisible] = useState<boolean>(opened)
-  const animationTimeoutRef = useRef<number>()
-
-  useEffect(() => {
-    return () => {
-      if (animationTimeoutRef.current) {
-        clearTimeout(animationTimeoutRef.current)
-        animationTimeoutRef.current = undefined
-      }
-    }
-  }, [])
+  const [descriptionId, setDescriptionId] = useState<string>('')
 
   const showOverlay = useMemo<boolean>(() => {
     if (!isVisible || !opened) {
@@ -244,6 +234,12 @@ export const VaulRoot = (_props: VaulRootProps) => {
 
   useFocusReturn({ opened, shouldReturnFocus: trapFocus && returnFocus })
 
+  useIsomorphicEffect(() => {
+    if (opened) {
+      setIsVisible(true)
+    }
+  }, [opened])
+
   return (
     <VaulContextProvider
       value={{
@@ -261,20 +257,17 @@ export const VaulRoot = (_props: VaulRootProps) => {
         showOverlay,
         overlayRef,
         scrollAreaComponent,
-        lockScroll
+        lockScroll,
+        descriptionId,
+        setDescriptionId
       }}>
       <Drawer.Root
         open={opened}
-        onOpenChange={(value) => {
-          onOpenChange(value)
-          if (value) {
-            setIsVisible(true)
-          }
-          if (!value) {
-            animationTimeoutRef.current = window.setTimeout(() => {
-              setIsVisible(false)
-              onCloseAnimationEnd?.()
-            }, 0.5 * 1000)
+        onOpenChange={onOpenChange}
+        onAnimationEnd={(open) => {
+          if (!open) {
+            setIsVisible(false)
+            onCloseAnimationEnd?.()
           }
         }}
         snapPoints={snapPoints as []}

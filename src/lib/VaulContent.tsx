@@ -57,7 +57,8 @@ export const VaulContent = factory<VaulContentFactory>((_props, ref) => {
     variant,
     closeOnEscape,
     removeScrollProps: removeScrollPropsProp,
-    lockScroll
+    lockScroll,
+    descriptionId
   } = useVaulContext()
 
   return (
@@ -68,6 +69,7 @@ export const VaulContent = factory<VaulContentFactory>((_props, ref) => {
       <FocusTrap active={opened && trapFocus}>
         <Drawer.Content
           asChild
+          aria-describedby={descriptionId}
           onOpenAutoFocus={(event) => event.preventDefault()}
           onCloseAutoFocus={(event) => event.preventDefault()}
           onInteractOutside={(event) => event.preventDefault()}
